@@ -1,7 +1,7 @@
 # Implementation Plan: Core Rust Library Development
 
-**Branch**: `001-phase-1-core` | **Date**: 2025-10-15 | **Spec**: /home/kaz/Dev/rust/_current/teeLedger/specs/001-phase-1-core/spec.md
-**Input**: Feature specification from `/specs/001-phase-1-core/spec.md`
+**Branch**: `001-core-rust-lib` | **Date**: 2025-10-15 | **Spec**: /home/kaz/Dev/rust/_current/teeLedger/specs/001-core-rust-lib/spec.md
+**Input**: Feature specification from `/specs/001-core-rust-lib/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
@@ -43,7 +43,7 @@ The system employs a layered backup and recovery strategy:
 ### Documentation (this feature)
 
 ```
-specs/001-phase-1-core/
+specs/001-core-rust-lib/
 ├── plan.md              # This file (/speckit.plan command output)
 ├── research.md          # Phase 0 output (/speckit.plan command)
 ├── data-model.md        # Phase 1 output (/speckit.plan command)

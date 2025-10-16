@@ -1,6 +1,6 @@
 # Tasks: Core Rust Library Development
 
-**Input**: Design documents from `/specs/001-phase-1-core/`
+**Input**: Design documents from `/specs/001-core-rust-lib/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/, quickstart.md
 
 **Tests**: The feature specification explicitly requests comprehensive unit tests.
@@ -23,13 +23,13 @@
 **Purpose**: Project initialization and basic structure
 
 - [] T001 Create Rust library project (`cdylib`) in `src/`
-- [] T002 Configure `Cargo.toml` with `rusqlite`, `jni`, `zeroize`, `base64`, `hmac`, `clap` dependencies
-- [] T003 [P] Create `src/models.rs`, `src/db.rs`, `src/ffi.rs`, `src/key_management.rs`, `src/backup.rs`, `src/recovery.rs`
-- [] T004 [P] Create `cli/src/main.rs` for the CLI application
-- [] T005 [P] Create `data/backups/` directory
-- [] T006 [P] Configure `tests/unit/` and `tests/integration/` directories with initial test files
-- [] T007 Implement HMAC-SHA256 for backup checksums in `src/backup.rs`
-- [] T008 Implement CLI argument parsing using `clap` in `cli/src/main.rs`
+- [x] T002 Configure `Cargo.toml` with `rusqlite`, `jni`, `zeroize`, `base64`, `hmac`, `clap` dependencies
+- [x] T003 [P] Create `src/models.rs`, `src/db.rs`, `src/ffi.rs`, `src/key_management.rs`, `src/backup.rs`, `src/recovery.rs`
+- [x] T004 [P] Create `cli/src/main.rs` for the CLI application
+- [x] T005 [P] Create `data/backups/` directory
+- [x] T006 [P] Configure `tests/unit/` and `tests/integration/` directories with initial test files
+- [x] T007 Implement HMAC-SHA256 for backup checksums in `src/backup.rs`
+- [x] T008 Implement CLI argument parsing using `clap` in `cli/src/main.rs`
 
 ---
 
@@ -39,10 +39,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [] T009 Implement SQLCipher integration in `db.rs` (ensure `rusqlite` is compiled with SQLCipher feature)
+- [x] T009 Implement SQLCipher integration in `db.rs` (ensure `rusqlite` is compiled with SQLCipher feature)
 - [] T010 Implement DEK generation and Android Keystore wrapping/unwrapping in `key_management.rs`
 - [] T011 Implement `PRAGMA journal_mode = WAL;` and `PRAGMA integrity_check;` logic in `db.rs`
-- [] T012 Implement `open_encrypted_db` function in `db.rs`
+- [x] T012 Implement `open_encrypted_db` function in `db.rs`
 - [] T013 Implement `backup_db` FFI function in `backup.rs` and expose via `ffi.rs`
 - [] T014 Implement `restore_db` FFI function in `recovery.rs` and expose via `ffi.rs`
 - [] T015 Implement append-only `transactions_history` table schema in `db.rs` (migration logic)
