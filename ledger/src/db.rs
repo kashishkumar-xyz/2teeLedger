@@ -111,6 +111,12 @@ pub fn list_balances(conn: &Connection) -> Result<Vec<Balance>, Box<dyn std::err
     Ok(balances)
 }
 
+pub fn get_balance(conn: &Connection, person: &str) -> Result<i64, Box<dyn std::error::Error>> {
+    let transactions = list_transactions(conn, Some(person), None, None)?;
+    let total_balance: i64 = transactions.iter().map(|tx| tx.amount).sum();
+    Ok(total_balance)
+}
+
 #[derive(Zeroize)]
 #[zeroize(drop)]
 pub struct EncryptionKey(pub String);

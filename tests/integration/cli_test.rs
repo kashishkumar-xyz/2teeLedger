@@ -130,3 +130,54 @@ fn test_cli_list_balances() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
+#[test]
+fn test_cli_get_balance() -> Result<(), Box<dyn std::error::Error>> {
+    let db_file = NamedTempFile::new()?;
+    let db_path = db_file.path().to_str().unwrap();
+    let key = "test_key";
+
+    // 1. Initialize the database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("init-db").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key);
+    cmd.assert().success().stdout(predicate::str::contains("Database initialized successfully"));
+
+    // 2. Add some transactions via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice").arg("--amount").arg("100").arg("--date").arg("2025-01-01");
+    cmd.assert().success();
+
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Bob").arg("--amount").arg("200").arg("--date").arg("2025-01-02");
+    cmd.assert().success();
+
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice").arg("--amount").arg("-50").arg("--date").arg("2025-01-03");
+    cmd.assert().success();
+
+    // 3. Get balance for Alice via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("balance").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice");
+    let _output = cmd.assert().success().stdout(predicate::str::contains("50")).get_output().stdout.clone();
+
+    // 4. Get balance for Bob via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("balance").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Bob");
+    let _output = cmd.assert().success().stdout(predicate::str::contains("200")).get_output().stdout.clone();
+
+    // 5. Get balance for Charlie (non-existent) via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("balance").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Charlie");
+    let _output = cmd.assert().success().stdout(predicate::str::contains("0")).get_output().stdout.clone();
+
+    Ok(())
+}

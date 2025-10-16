@@ -136,6 +136,37 @@ pub extern "C" fn list_balances(
     }
 }
 
+#[no_mangle]
+pub extern "C" fn get_balance(
+    db_path: *const c_char,
+    encryption_key: *const c_char,
+    person: *const c_char,
+) -> *const c_char {
+    let db_path_str = unsafe { CStr::from_ptr(db_path).to_str().unwrap() };
+    let encryption_key_str = unsafe { CStr::from_ptr(encryption_key).to_str().unwrap() };
+    let mut key = db::EncryptionKey(encryption_key_str.to_string());
+    let person_str = unsafe { CStr::from_ptr(person).to_str().unwrap() };
+
+    match db::open_encrypted_db(db_path_str, &mut key) {
+        Ok(conn) => {
+            match db::get_balance(&conn, person_str) {
+                Ok(balance) => {
+                    let balance_string = balance.to_string();
+                    CString::new(balance_string).unwrap().into_raw()
+                }
+                Err(e) => {
+                    let error_msg = CString::new(format!("Failed to get balance: {}", e)).unwrap();
+                    error_msg.into_raw()
+                }
+            }
+        }
+        Err(e) => {
+            let error_msg = CString::new(format!("Failed to open database: {}", e)).unwrap();
+            error_msg.into_raw()
+        }
+    }
+}
+
 
 #[no_mangle]
 pub extern "C" fn restore_db(backup_path: *const c_char, db_path: *const c_char) -> *const c_char {

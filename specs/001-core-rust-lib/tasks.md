@@ -138,15 +138,15 @@
 
 **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T039 [P] [US4] Unit test for `get_balance` logic in `tests/unit/models_test.rs`
-- [ ] T040 [P] [US4] Unit test for `get_balance` FFI exposure in `tests/unit/ffi_test.rs`
-- [ ] T041 [P] [US4] CLI integration test for `balance <person>` command in `tests/integration/cli_test.rs`
+- [x] T039 [P] [US4] Unit test for `get_balance` logic in `tests/unit/db_test.rs`
+- [x] T040 [P] [US4] Unit test for `get_balance` FFI exposure in `tests/unit/ffi_test.rs`
+- [x] T041 [P] [US4] CLI integration test for `balance` command in `tests/integration/cli_test.rs`
 
 ### Implementation for User Story 4
 
-- [ ] T042 [US4] Implement `get_balance` logic in `src/db.rs`
-- [ ] T043 [US4] Expose `get_balance` via FFI in `src/ffi.rs`
-- [ ] T044 [US4] Implement `balance <person>` command in `cli/src/main.rs` to call `get_balance` FFI
+- [x] T042 [US4] Implement `get_balance` logic in `src/db.rs`
+- [x] T043 [US4] Expose `get_balance` via FFI in `src/ffi.rs`
+- [x] T044 [US4] Implement `balance <person>` command in `cli/src/main.rs` to call `get_balance` FFI
 
 **Checkpoint**: All user stories should now be independently functional
 

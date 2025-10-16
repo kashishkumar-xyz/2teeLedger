@@ -44,6 +44,10 @@ enum Commands {
     },
     /// Gets the balance for a person
     Balance {
+        #[arg(long)]
+        db_path: String,
+        #[arg(long)]
+        encryption_key: String,
         #[arg(short, long)]
         person: String,
     },
@@ -143,8 +147,22 @@ fn main() {
                 let _ = CString::from_raw(result as *mut _);
             }
         }
-        Commands::Balance { person } => {
-            println!("Getting balance for {}", person);
+        Commands::Balance { db_path, encryption_key, person } => {
+            let db_path_c = CString::new(db_path.as_str()).unwrap();
+            let key_c = CString::new(encryption_key.as_str()).unwrap();
+            let person_c = CString::new(person.as_str()).unwrap();
+
+            let result = ledger_lib::ffi::get_balance(
+                db_path_c.as_ptr(),
+                key_c.as_ptr(),
+                person_c.as_ptr(),
+            );
+
+            let result_str = unsafe { CStr::from_ptr(result).to_str().unwrap() };
+            println!("{}", result_str);
+            unsafe {
+                let _ = CString::from_raw(result as *mut _);
+            }
         }
         Commands::Balances { db_path, encryption_key } => {
             let db_path_c = CString::new(db_path.as_str()).unwrap();

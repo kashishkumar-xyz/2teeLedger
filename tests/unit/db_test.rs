@@ -1,4 +1,4 @@
-use ledger::db::{initialize_db, add_transaction, list_transactions, list_balances};
+use ledger::db::{initialize_db, add_transaction, list_transactions, list_balances, get_balance};
 use rusqlite::Connection;
 use ledger::db::EncryptionKey;
 use ledger::models::Balance;
@@ -82,4 +82,24 @@ fn test_list_balances() {
     actual_balances.sort_by(|a, b| a.person.cmp(&b.person));
 
     assert_eq!(actual_balances, expected_balances);
+}
+
+#[test]
+fn test_get_balance() {
+    let conn = Connection::open_in_memory().unwrap();
+    initialize_db(&conn).unwrap();
+
+    // Add some transactions
+    add_transaction(&conn, "Alice", 100, "2025-01-01", None).unwrap();
+    add_transaction(&conn, "Bob", 200, "2025-01-02", Some("Lunch")).unwrap();
+    add_transaction(&conn, "Alice", -50, "2025-01-03", Some("Coffee")).unwrap();
+
+    let alice_balance = get_balance(&conn, "Alice").unwrap();
+    assert_eq!(alice_balance, 50);
+
+    let bob_balance = get_balance(&conn, "Bob").unwrap();
+    assert_eq!(bob_balance, 200);
+
+    let charlie_balance = get_balance(&conn, "Charlie").unwrap();
+    assert_eq!(charlie_balance, 0);
 }
