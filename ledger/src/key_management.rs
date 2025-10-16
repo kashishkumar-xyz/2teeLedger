@@ -1,5 +1,4 @@
 use rand::{thread_rng, RngCore};
-use zeroize::Zeroize;
 
 // Mock implementation for DEK generation.
 // In a real Android application, this would interact with the Android Keystore.
@@ -11,7 +10,7 @@ pub fn generate_dek(dek: &mut [u8; 32]) {
 // In a real Android application, this would use a KEK from the Android Keystore to encrypt the DEK.
 pub fn wrap_dek(dek: &[u8]) -> Vec<u8> {
     // For this mock, we'll just return the DEK as is.
-    let mut wrapped_dek = dek.to_vec();
+    let wrapped_dek = dek.to_vec();
     wrapped_dek
 }
 

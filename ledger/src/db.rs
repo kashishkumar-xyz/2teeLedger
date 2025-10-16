@@ -1,6 +1,5 @@
 use rusqlite::{Connection, Result};
 use zeroize::Zeroize;
-use chrono::Utc;
 use crate::models::Transaction;
 use uuid::Uuid;
 
@@ -40,7 +39,7 @@ pub fn add_transaction(
 
     conn.execute(
         "INSERT INTO transactions_history (tx_id, version, data, op, created_at) VALUES (?1, ?2, ?3, ?4, ?5)",
-        &[&tx_id, &version.to_string(), &data, &op, &created_at],
+        &[&tx_id, &version.to_string(), &data, &op.to_string(), &created_at],
     )?;
 
     Ok(())

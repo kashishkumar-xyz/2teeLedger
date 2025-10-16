@@ -65,14 +65,14 @@
 - [x] T017 [P] [US1] Unit test for `Transaction` struct validation in `tests/unit/models_test.rs`
 - [x] T018 [P] [US1] Unit test for `add_transaction` logic (including input validation and history recording) in `tests/unit/db_test.rs`
 - [x] T019 [P] [US1] Unit test for `add_transaction` FFI exposure in `tests/unit/ffi_test.rs`
-- [] T020 [P] [US1] CLI integration test for `add` command in `tests/integration/cli_test.rs`
+- [x] T020 [P] [US1] CLI integration test for `add` command in `tests/integration/cli_test.rs`
 
 ### Implementation for User Story 1
 
 - [x] T021 [P] [US1] Define `Transaction` struct in `src/models.rs`
 - [x] T022 [US1] Implement `add_transaction` logic in `src/db.rs` (including input validation and writing to `transactions_history`)
 - [x] T023 [US1] Expose `add_transaction` via FFI in `src/ffi.rs`
-- [] T024 [US1] Implement `add` command in `cli/src/main.rs` to call `add_transaction` FFI
+- [x] T024 [US1] Implement `add` command in `cli/src/main.rs` to call `add_transaction` FFI
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
