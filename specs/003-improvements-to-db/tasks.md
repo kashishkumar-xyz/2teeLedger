@@ -8,6 +8,7 @@
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
 ## Format: `[ID] [P?] [Story] Description`
+
 - **[P]**: Can run in parallel (different files, no dependencies)
 - **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
 - Include exact file paths in descriptions
@@ -30,20 +31,20 @@
 
 **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T001 Write unit test for `initialize_db` in `tests/unit/db_test.rs` to verify new columns are created.
-- [ ] T002 Write unit test for `add_transaction` in `tests/unit/db_test.rs` to verify `person` and `date` are inserted into new columns.
-- [ ] T003 Write unit test for `list_transactions` in `tests/unit/db_test.rs` to verify it can retrieve `person` and `date` from new columns.
+- [X] T001 Write unit test for `initialize_db` in `tests/unit/db_test.rs` to verify new columns are created.
+- [X] T002 Write unit test for `add_transaction` in `tests/unit/db_test.rs` to verify `person` and `date` are inserted into new columns.
+- [X] T003 Write unit test for `list_transactions` in `tests/unit/db_test.rs` to verify it can retrieve `person` and `date` from new columns.
 
 ### Implementation for Foundational Phase
 
-- [ ] T004 Modify `initialize_db` to add `person` (TEXT) and `date` (TEXT) columns to `transactions_history` table in `ledger/src/db.rs`.
-- [ ] T005 Update `add_transaction` to accept `person` and `date` as direct arguments and insert them into the new columns in `ledger/src/db.rs`.
-- [ ] T006 Update `list_transactions` to query `person` and `date` from the new columns instead of `JSON_EXTRACT` in `ledger/src/db.rs`.
-- [ ] T007 Update `list_balances` to use the updated `list_transactions` in `ledger/src/db.rs`.
-- [ ] T008 Update `get_balance` to use the updated `list_transactions` in `ledger/src/db.rs`.
-- [ ] T009 Update `Transaction` struct in `ledger/src/models.rs` to include `person` and `date` fields for direct mapping from database columns.
-- [ ] T010 Update FFI functions (`add_transaction`, `list_transactions`, `list_balances`, `get_balance`) in `ledger/src/ffi.rs` to pass/receive `person` and `date` to/from the updated `db` functions.
-- [ ] T011 Update CLI commands (`add`, `list`, `balance`, `balances`) in `cli/src/main.rs` to pass/receive `person` and `date` to/from the updated FFI functions.
+- [X] T004 Modify `initialize_db` to add `person` (TEXT) and `date` (TEXT) columns to `transactions_history` table in `ledger/src/db.rs`.
+- [X] T005 Update `add_transaction` to accept `person` and `date` as direct arguments and insert them into the new columns in `ledger/src/db.rs`.
+- [X] T006 Update `list_transactions` to query `person` and `date` from the new columns instead of `JSON_EXTRACT` in `ledger/src/db.rs`.
+- [X] T007 Update `list_balances` to use the updated `list_transactions` in `ledger/src/db.rs`.
+- [X] T008 Update `get_balance` to use the updated `list_transactions` in `ledger/src/db.rs`.
+- [X] T009 Update `Transaction` struct in `ledger/src/models.rs` to include `person` and `date` fields for direct mapping from database columns.
+- [X] T010 Update FFI functions (`add_transaction`, `list_transactions`, `list_balances`, `get_balance`) in `ledger/src/ffi.rs` to pass/receive `person` and `date` to/from the updated `db` functions.
+- [X] T011 Update CLI commands (`add`, `list`, `balance`, `balances`) in `cli/src/main.rs` to pass/receive `person` and `date` to/from the updated FFI functions.
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -59,8 +60,8 @@
 
 **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T012 [US1] Write integration tests for `cli add` in `tests/integration/cli_test.rs`.
-- [ ] T013 [US1] Write integration tests for `cli list` (all) in `tests/integration/cli_test.rs`.
+- [X] T012 [US1] Write integration tests for `cli add` in `tests/integration/cli_test.rs`.
+- [X] T013 [US1] Write integration tests for `cli list` (all) in `tests/integration/cli_test.rs`.
 
 ### Implementation for User Story 1
 
@@ -80,12 +81,12 @@
 
 **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T014 [US2] Write unit tests for `list_transactions` (filter by person) in `tests/unit/db_test.rs`.
-- [ ] T015 [US2] Write unit tests for `list_transactions` (filter by date) in `tests/unit/db_test.rs`.
-- [ ] T016 [US2] Write unit tests for `list_transactions` (limit) in `tests/unit/db_test.rs`.
-- [ ] T017 [US2] Write integration tests for `cli list --person` in `tests/integration/cli_test.rs`.
-- [ ] T018 [US2] Write integration tests for `cli list --since` in `tests/integration/cli_test.rs`.
-- [ ] T019 [US2] Write integration tests for `cli list --limit` in `tests/integration/cli_test.rs`.
+- [X] T014 [US2] Write unit tests for `list_transactions` (filter by person) in `tests/unit/db_test.rs`.
+- [X] T015 [US2] Write unit tests for `list_transactions` (filter by date) in `tests/unit/db_test.rs`.
+- [X] T016 [US2] Write unit tests for `list_transactions` (limit) in `tests/unit/db_test.rs`.
+- [X] T017 [US2] Write integration tests for `cli list --person` in `tests/integration/cli_test.rs`.
+- [X] T018 [US2] Write integration tests for `cli list --since` in `tests/integration/cli_test.rs`.
+- [X] T019 [US2] Write integration tests for `cli list --limit` in `tests/integration/cli_test.rs`.
 
 ### Implementation for User Story 2
 
@@ -105,10 +106,10 @@
 
 **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T020 [US3] Write unit tests for `list_balances` in `tests/unit/db_test.rs`.
-- [ ] T021 [US3] Write unit tests for `get_balance` in `tests/unit/db_test.rs`.
-- [ ] T022 [US3] Write integration tests for `cli balances` in `tests/integration/cli_test.rs`.
-- [ ] T023 [US3] Write integration tests for `cli balance --person` in `tests/integration/cli_test.rs`.
+- [X] T020 [US3] Write unit tests for `list_balances` in `tests/unit/db_test.rs`.
+- [X] T021 [US3] Write unit tests for `get_balance` in `tests/unit/db_test.rs`.
+- [X] T022 [US3] Write integration tests for `cli balances` in `tests/integration/cli_test.rs`.
+- [X] T023 [US3] Write integration tests for `cli balance --person` in `tests/integration/cli_test.rs`.
 
 ### Implementation for User Story 3
 
@@ -128,10 +129,10 @@
 
 **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T024 [US4] Write unit tests for `backup_db` in `tests/unit/backup_test.rs`.
-- [ ] T025 [US4] Write unit tests for `restore_db` in `tests/unit/recovery_test.rs`.
-- [ ] T026 [US4] Write integration tests for `cli backup-db` in `tests/integration/cli_test.rs`.
-- [ ] T027 [US4] Write integration tests for `cli restore-db` in `tests/integration/cli_test.rs`.
+- [X] T024 [US4] Write unit tests for `backup_db` in `tests/unit/backup_test.rs`.
+- [X] T025 [US4] Write unit tests for `restore_db` in `tests/unit/recovery_test.rs`.
+- [X] T026 [US4] Write integration tests for `cli backup-db` in `tests/integration/cli_test.rs`.
+- [X] T027 [US4] Write integration tests for `cli restore-db` in `tests/integration/cli_test.rs`.
 
 ### Implementation for User Story 4
 
@@ -143,9 +144,10 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T028 Update `cli_commands_scenario.txt` in `tests/cli_commands_scenario.txt` to reflect the new schema and verify correct output.
-- [ ] T029 Run `cargo clippy` and address any warnings.
-- [ ] T030 Run `cargo fmt` to format the code.
+- [X] T028 Implement performance test for list operations (filtered by person/date) against 10,000 transactions benchmark in tests/performance/list_performance_test.rs
+- [X] T029 Update `cli_commands_scenario.txt` in `tests/cli_commands_scenario.txt` to reflect the new schema and verify correct output.
+- [X] T030 Run `cargo clippy` and address any warnings.
+- [X] T031 Run `cargo fmt` to format the code.
 
 ---
 
@@ -178,38 +180,39 @@
 
 ### MVP First (User Story 1 Only)
 
-1.  Complete Phase 2: Foundational (CRITICAL - blocks all stories)
-2.  Complete Phase 3: User Story 1
-3.  **STOP and VALIDATE**: Test User Story 1 independently
-4.  Deploy/demo if ready
+1. Complete Phase 2: Foundational (CRITICAL - blocks all stories)
+2. Complete Phase 3: User Story 1
+3. **STOP and VALIDATE**: Test User Story 1 independently
+4. Deploy/demo if ready
 
 ### Incremental Delivery
 
-1.  Complete Foundational Phase → Foundation ready
-2.  Add User Story 1 → Test independently → Deploy/Demo (MVP!)
-3.  Add User Story 2 → Test independently → Deploy/Demo
-4.  Add User Story 3 → Test independently → Deploy/Demo
-5.  Add User Story 4 → Test independently → Deploy/Demo
-6.  Each story adds value without breaking previous stories
+1. Complete Foundational Phase → Foundation ready
+2. Add User Story 1 → Test independently → Deploy/Demo (MVP!)
+3. Add User Story 2 → Test independently → Deploy/Demo
+4. Add User Story 3 → Test independently → Deploy/Demo
+5. Add User Story 4 → Test independently → Deploy/Demo
+6. Each story adds value without breaking previous stories
 
 ### Parallel Team Strategy
 
 With multiple developers:
 
-1.  Team completes Foundational Phase together
-2.  Once Foundational is done:
-    -   Developer A: User Story 1
-    -   Developer B: User Story 2
-    -   Developer C: User Story 3
-    -   Developer D: User Story 4
-3.  Stories complete and integrate independently
+1. Team completes Foundational Phase together
+2. Once Foundational is done:
+    - Developer A: User Story 1
+    - Developer B: User Story 2
+    - Developer C: User Story 3
+    - Developer D: User Story 4
+3. Stories complete and integrate independently
 
 ---
 
 ## Notes
 
--   Each user story should be independently completable and testable
--   Verify tests fail before implementing
--   Commit after each task or logical group
--   Stop at any checkpoint to validate story independently
--   Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+- Each user story should be independently completable and testable
+- Verify tests fail before implementing
+- Commit after each task or logical group
+- Stop at any checkpoint to validate story independently
+- Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+

@@ -1,8 +1,8 @@
 use ledger_lib::backup::backup_db;
-use ledger_lib::db::{initialize_db, add_transaction, open_encrypted_db, EncryptionKey};
+use ledger_lib::db::{add_transaction, initialize_db, open_encrypted_db, EncryptionKey};
 use rusqlite::Connection;
-use tempfile::NamedTempFile;
 use std::fs;
+use tempfile::NamedTempFile;
 
 #[test]
 fn test_backup_db() -> Result<(), Box<dyn std::error::Error>> {
@@ -26,8 +26,11 @@ fn test_backup_db() -> Result<(), Box<dyn std::error::Error>> {
     assert!(fs::metadata(backup_path)?.len() > 0);
 
     // 4. Try to open the backup file to ensure it's a valid SQLite database
-    let backup_conn = open_encrypted_db(backup_path, &mut key)?;
-    let count: i64 = backup_conn.query_row("SELECT COUNT(*) FROM transactions_history", [], |row| row.get(0))?;
+    let backup_conn = open_encrypted_db(backup_path, &mut key, true)?;
+    let count: i64 =
+        backup_conn.query_row("SELECT COUNT(*) FROM transactions_history", [], |row| {
+            row.get(0)
+        })?;
     assert_eq!(count, 1);
 
     Ok(())

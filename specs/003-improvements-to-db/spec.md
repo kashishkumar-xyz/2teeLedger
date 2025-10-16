@@ -101,5 +101,5 @@ As a user, I want to be able to back up my ledger database and restore it, so I 
 -   **SC-001**: All `list` operations (all, by person, by date, with limit) return 100% accurate transaction data.
 -   **SC-002**: All `balance` and `balances` operations return 100% accurate financial totals.
 -   **SC-003**: `list` operations filtered by `person` or `date` complete in under 100ms for a database containing 10,000 transactions.
--   **SC-004**: Database backup and restore operations complete successfully without data loss or corruption.
+- **SC-004**: Database backup and restore operations complete successfully without data loss, meaning all original data bits are identical post-restore.
 -   **SC-005**: No runtime errors related to missing database functions occur during the execution of `list` or `balance` commands.
