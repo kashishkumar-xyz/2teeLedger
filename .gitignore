@@ -1,0 +1,36 @@
+# Rust
+/target/
+*.rlib
+*.so
+*.dylib
+*.a
+*.ll
+*.bc
+*.profraw
+*.profdata
+*.gcno
+*.gcda
+
+# CLI
+/cli/target/
+
+# Data
+/data/
+
+# Logs
+*.log
+
+# Environment variables
+.env*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+
+# IDE settings
+.vscode/
+.idea/
