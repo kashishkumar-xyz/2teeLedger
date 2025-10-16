@@ -22,7 +22,7 @@ enum Commands {
         encryption_key: String,
         #[arg(short, long)]
         person: String,
-        #[arg(short, long)]
+        #[arg(short, long, allow_hyphen_values = true)]
         amount: i32,
         #[arg(short, long)]
         date: String,
@@ -48,7 +48,12 @@ enum Commands {
         person: String,
     },
     /// Lists all balances
-    Balances {},
+    Balances {
+        #[arg(long)]
+        db_path: String,
+        #[arg(long)]
+        encryption_key: String,
+    },
     /// Initializes the database
     InitDb {
         #[arg(short, long)]
@@ -141,8 +146,20 @@ fn main() {
         Commands::Balance { person } => {
             println!("Getting balance for {}", person);
         }
-        Commands::Balances {} => {
-            println!("Listing all balances");
+        Commands::Balances { db_path, encryption_key } => {
+            let db_path_c = CString::new(db_path.as_str()).unwrap();
+            let key_c = CString::new(encryption_key.as_str()).unwrap();
+
+            let result = ledger_lib::ffi::list_balances(
+                db_path_c.as_ptr(),
+                key_c.as_ptr(),
+            );
+
+            let result_str = unsafe { CStr::from_ptr(result).to_str().unwrap() };
+            println!("{}", result_str);
+            unsafe {
+                let _ = CString::from_raw(result as *mut _);
+            }
         }
         Commands::InitDb { db_path, encryption_key } => {
                         let db_path_c = CString::new(db_path.as_str()).unwrap();

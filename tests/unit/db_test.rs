@@ -1,6 +1,7 @@
-use ledger::db::{initialize_db, add_transaction, list_transactions};
+use ledger::db::{initialize_db, add_transaction, list_transactions, list_balances};
 use rusqlite::Connection;
 use ledger::db::EncryptionKey;
+use ledger::models::Balance;
 
 #[test]
 fn test_add_transaction() {
@@ -54,4 +55,31 @@ fn test_list_transactions() {
     assert_eq!(filtered_limited.len(), 1);
     assert_eq!(filtered_limited[0].person, "Alice");
     assert_eq!(filtered_limited[0].date, "2025-01-03");
+}
+
+#[test]
+fn test_list_balances() {
+    let conn = Connection::open_in_memory().unwrap();
+    initialize_db(&conn).unwrap();
+
+    // Add some transactions
+    add_transaction(&conn, "Alice", 100, "2025-01-01", None).unwrap();
+    add_transaction(&conn, "Bob", 200, "2025-01-02", Some("Lunch")).unwrap();
+    add_transaction(&conn, "Alice", -50, "2025-01-03", Some("Coffee")).unwrap();
+    add_transaction(&conn, "Bob", -150, "2025-01-04", Some("Dinner")).unwrap();
+    add_transaction(&conn, "Charlie", 300, "2025-01-05", None).unwrap();
+
+    let balances = list_balances(&conn).unwrap();
+
+    let mut expected_balances = vec![
+        Balance { person: "Alice".to_string(), balance: 50 },
+        Balance { person: "Bob".to_string(), balance: 50 },
+        Balance { person: "Charlie".to_string(), balance: 300 },
+    ];
+    expected_balances.sort_by(|a, b| a.person.cmp(&b.person));
+
+    let mut actual_balances = balances;
+    actual_balances.sort_by(|a, b| a.person.cmp(&b.person));
+
+    assert_eq!(actual_balances, expected_balances);
 }

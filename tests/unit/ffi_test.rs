@@ -1,4 +1,4 @@
-use ledger_lib::ffi::{init_db, add_transaction, list_transactions};
+use ledger_lib::ffi::{init_db, add_transaction, list_transactions, list_balances};
 use std::ffi::CString;
 use std::ptr;
 use tempfile::NamedTempFile;
@@ -70,4 +70,45 @@ fn test_list_transactions_ffi() {
     assert!(alice_transactions.is_array());
     assert_eq!(alice_transactions.as_array().unwrap().len(), 1);
     assert_eq!(alice_transactions.as_array().unwrap()[0]["person"], "Alice");
+}
+
+#[test]
+fn test_list_balances_ffi() {
+    let db_file = NamedTempFile::new().unwrap();
+    let db_path = CString::new(db_file.path().to_str().unwrap()).unwrap();
+    let key = CString::new("test_key").unwrap();
+
+    // Initialize DB
+    let init_result = init_db(db_path.as_ptr(), key.as_ptr());
+    let _ = unsafe { CString::from_raw(init_result as *mut _) };
+
+    // Add transactions
+    let person1 = CString::new("Alice").unwrap();
+    let date1 = CString::new("2025-01-01").unwrap();
+    let add_result1 = add_transaction(db_path.as_ptr(), key.as_ptr(), person1.as_ptr(), 100, date1.as_ptr(), ptr::null());
+    let _ = unsafe { CString::from_raw(add_result1 as *mut _) };
+
+    let person2 = CString::new("Bob").unwrap();
+    let date2 = CString::new("2025-01-02").unwrap();
+    let add_result2 = add_transaction(db_path.as_ptr(), key.as_ptr(), person2.as_ptr(), 200, date2.as_ptr(), ptr::null());
+    let _ = unsafe { CString::from_raw(add_result2 as *mut _) };
+
+    let person3 = CString::new("Alice").unwrap();
+    let date3 = CString::new("2025-01-03").unwrap();
+    let add_result3 = add_transaction(db_path.as_ptr(), key.as_ptr(), person3.as_ptr(), -50, date3.as_ptr(), ptr::null());
+    let _ = unsafe { CString::from_raw(add_result3 as *mut _) };
+
+    // List balances
+    let list_balances_result = list_balances(db_path.as_ptr(), key.as_ptr());
+    let list_balances_result_str = unsafe { CString::from_raw(list_balances_result as *mut _) };
+    let balances: Value = serde_json::from_str(list_balances_result_str.to_str().unwrap()).unwrap();
+
+    assert!(balances.is_array());
+    assert_eq!(balances.as_array().unwrap().len(), 2);
+
+    let alice_balance = balances.as_array().unwrap().iter().find(|b| b["person"] == "Alice").unwrap();
+    assert_eq!(alice_balance["balance"], 50);
+
+    let bob_balance = balances.as_array().unwrap().iter().find(|b| b["person"] == "Bob").unwrap();
+    assert_eq!(bob_balance["balance"], 200);
 }

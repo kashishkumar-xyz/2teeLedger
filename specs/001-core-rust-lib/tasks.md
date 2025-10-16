@@ -112,17 +112,17 @@
 
 **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T031 [P] [US3] Unit test for `Balance` struct in `tests/unit/models_test.rs`
-- [ ] T032 [P] [US3] Unit test for `list_balances` logic (aggregating from history) in `tests/unit/db_test.rs`
-- [ ] T033 [P] [US3] Unit test for `list_balances` FFI exposure in `tests/unit/ffi_test.rs`
-- [ ] T034 [P] [US3] CLI integration test for `balances` command in `tests/integration/cli_test.rs`
+- [x] T031 [P] [US3] Unit test for `Balance` struct in `tests/unit/models_test.rs`
+- [x] T032 [P] [US3] Unit test for `list_balances` logic (aggregating from history) in `tests/unit/db_test.rs`
+- [x] T033 [P] [US3] Unit test for `list_balances` FFI exposure in `tests/unit/ffi_test.rs`
+- [x] T034 [P] [US3] CLI integration test for `balances` command in `tests/integration/cli_test.rs`
 
 ### Implementation for User Story 3
 
-- [ ] T035 [P] [US3] Define `Balance` struct in `src/models.rs`
-- [ ] T036 [US3] Implement `list_balances` logic in `src/db.rs`
-- [ ] T037 [US3] Expose `list_balances` via FFI in `src/ffi.rs`
-- [ ] T038 [US3] Implement `balances` command in `cli/src/main.rs` to call `list_balances` FFI
+- [x] T035 [US3] Define `Balance` struct in `src/models.rs`
+- [x] T036 [US3] Implement `list_balances` logic in `src/db.rs`
+- [x] T037 [US3] Expose `list_balances` via FFI in `src/ffi.rs`
+- [x] T038 [US3] Implement `balances` command in `cli/src/main.rs` to call `list_balances` FFI
 
 **Checkpoint**: All user stories should now be independently functional
 

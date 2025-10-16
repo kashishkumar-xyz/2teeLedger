@@ -1,4 +1,4 @@
-use ledger::models::Transaction;
+use ledger::models::{Transaction, Balance};
 
 #[test]
 fn test_transaction_serialization() {
@@ -14,4 +14,17 @@ fn test_transaction_serialization() {
     let deserialized: Transaction = serde_json::from_str(&serialized).unwrap();
 
     assert_eq!(transaction, deserialized);
+}
+
+#[test]
+fn test_balance_serialization() {
+    let balance = Balance {
+        person: "Alice".to_string(),
+        balance: 500,
+    };
+
+    let serialized = serde_json::to_string(&balance).unwrap();
+    let deserialized: Balance = serde_json::from_str(&serialized).unwrap();
+
+    assert_eq!(balance, deserialized);
 }

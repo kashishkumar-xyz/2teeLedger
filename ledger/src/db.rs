@@ -1,8 +1,9 @@
 use rusqlite::{Connection, Result};
 use zeroize::Zeroize;
-use crate::models::Transaction;
+use crate::models::{Transaction, Balance};
 use uuid::Uuid;
 use chrono::{NaiveDate, Utc};
+use std::collections::HashMap;
 
 pub fn add_transaction(
     conn: &Connection,
@@ -91,6 +92,23 @@ pub fn list_transactions(
     }
 
     Ok(transactions)
+}
+
+pub fn list_balances(conn: &Connection) -> Result<Vec<Balance>, Box<dyn std::error::Error>> {
+    let transactions = list_transactions(conn, None, None, None)?;
+
+    let mut balances_map: HashMap<String, i64> = HashMap::new();
+
+    for tx in transactions {
+        *balances_map.entry(tx.person).or_insert(0) += tx.amount;
+    }
+
+    let balances: Vec<Balance> = balances_map
+        .into_iter()
+        .map(|(person, balance)| Balance { person, balance })
+        .collect();
+
+    Ok(balances)
 }
 
 #[derive(Zeroize)]

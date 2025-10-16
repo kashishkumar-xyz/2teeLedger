@@ -8,3 +8,9 @@ pub struct Transaction {
     pub amount: i64,
     pub note: Option<String>,
 }
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct Balance {
+    pub person: String,
+    pub balance: i64,
+}
