@@ -1,9 +1,9 @@
-use rusqlite::{Connection, Result};
-use zeroize::Zeroize;
-use crate::models::{Transaction, Balance};
-use uuid::Uuid;
+use crate::models::{Balance, Transaction};
 use chrono::{NaiveDate, Utc};
+use rusqlite::{Connection, Result};
 use std::collections::HashMap;
+use uuid::Uuid;
+use zeroize::Zeroize;
 
 pub fn add_transaction(
     conn: &Connection,
@@ -40,8 +40,8 @@ pub fn add_transaction(
     let created_at = Utc::now().to_rfc3339();
 
     conn.execute(
-        "INSERT INTO transactions_history (tx_id, version, data, op, created_at) VALUES (?1, ?2, ?3, ?4, ?5)",
-        &[&tx_id, &version.to_string(), &data, &op.to_string(), &created_at],
+        "INSERT INTO transactions_history (tx_id, version, person, date, data, op, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        rusqlite::params![tx_id, version.to_string(), person, date, data, op.to_string(), created_at],
     )?;
 
     Ok(())
@@ -53,11 +53,12 @@ pub fn list_transactions(
     since_date: Option<&str>,
     limit: Option<i32>,
 ) -> Result<Vec<Transaction>, Box<dyn std::error::Error>> {
-    let mut query = "SELECT data FROM transactions_history WHERE op != 'delete'".to_string();
+    let mut query =
+        "SELECT person, date, data FROM transactions_history WHERE op != 'delete'".to_string();
     let mut params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
 
     if let Some(p) = person {
-        query.push_str(" AND JSON_EXTRACT(data, '$.person') = ?");
+        query.push_str(" AND person = ?");
         params.push(Box::new(p.to_string()));
     }
 
@@ -66,11 +67,11 @@ pub fn list_transactions(
         if NaiveDate::parse_from_str(d, "%Y-%m-%d").is_err() {
             return Err("Invalid date format. Expected YYYY-MM-DD".into());
         }
-        query.push_str(" AND JSON_EXTRACT(data, '$.date') >= ?");
+        query.push_str(" AND date >= ?");
         params.push(Box::new(d.to_string()));
     }
 
-    query.push_str(" ORDER BY JSON_EXTRACT(data, '$.date') DESC, created_at DESC");
+    query.push_str(" ORDER BY date DESC, created_at DESC");
 
     if let Some(l) = limit {
         query.push_str(&format!(" LIMIT {}", l));
@@ -78,11 +79,25 @@ pub fn list_transactions(
 
     let mut stmt = conn.prepare(&query)?;
     let transaction_iter = stmt.query_map(
-        params.iter().map(|p| p.as_ref()).collect::<Vec<&dyn rusqlite::ToSql>>().as_slice(),
+        params
+            .iter()
+            .map(|p| p.as_ref())
+            .collect::<Vec<&dyn rusqlite::ToSql>>()
+            .as_slice(),
         |row| {
-            let data_str: String = row.get(0)?;
-            serde_json::from_str(&data_str)
-                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(e)))
+            let person: String = row.get(0)?;
+            let date: String = row.get(1)?;
+            let data_str: String = row.get(2)?;
+            let mut transaction: Transaction = serde_json::from_str(&data_str).map_err(|e| {
+                rusqlite::Error::FromSqlConversionFailure(
+                    2,
+                    rusqlite::types::Type::Text,
+                    Box::new(e),
+                )
+            })?;
+            transaction.person = person;
+            transaction.date = date;
+            Ok(transaction)
         },
     )?;
 
@@ -123,20 +138,17 @@ pub struct EncryptionKey(pub String);
 
 pub fn initialize_db(conn: &Connection) -> Result<()> {
     conn.execute(
-        "CREATE TABLE IF NOT EXISTS transactions_history (
-            tx_id TEXT NOT NULL,
-            version INTEGER NOT NULL,
-            data TEXT NOT NULL,
-            op TEXT NOT NULL,
-            created_at TEXT NOT NULL,
-            PRIMARY KEY (tx_id, version)
-        )",
+        "CREATE TABLE IF NOT EXISTS transactions_history (\n            tx_id TEXT NOT NULL,\n            version INTEGER NOT NULL,\n            person TEXT NOT NULL,\n            date TEXT NOT NULL,\n            data TEXT NOT NULL,\n            op TEXT NOT NULL,\n            created_at TEXT NOT NULL,\n            PRIMARY KEY (tx_id, version)\n        )",
         [],
     )?;
     Ok(())
 }
 
-pub fn open_encrypted_db(db_path: &str, key: &mut EncryptionKey, check_table: bool) -> Result<Connection> {
+pub fn open_encrypted_db(
+    db_path: &str,
+    key: &mut EncryptionKey,
+    check_table: bool,
+) -> Result<Connection> {
     let conn = Connection::open(db_path)?;
     conn.pragma_update(None, "key", &key.0)?;
     conn.pragma_update(None, "journal_mode", "WAL")?;
