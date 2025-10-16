@@ -84,7 +84,10 @@ fn test_full_ledger_flow() -> Result<(), Box<dyn std::error::Error>> {
     // 8. Test opening with wrong key
     let mut cmd = Command::cargo_bin("cli")?;
     cmd.arg("open-db").arg("--db-path").arg(db_path).arg("--encryption-key").arg("wrong_key");
-    cmd.assert().failure().stderr(predicate::str::contains("Failed to open database"));
+    let assert = cmd.assert().failure();
+    let output = assert.get_output();
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("Failed to open database: file is not a database"));
 
     Ok(())
 }
