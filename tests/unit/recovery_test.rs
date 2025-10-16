@@ -1,9 +1,8 @@
-use ledger_lib::recovery::restore_db;
 use ledger_lib::backup::backup_db;
-use ledger_lib::db::{initialize_db, add_transaction, open_encrypted_db, EncryptionKey};
+use ledger_lib::db::{add_transaction, initialize_db, open_encrypted_db, EncryptionKey};
+use ledger_lib::recovery::restore_db;
 use rusqlite::Connection;
 use tempfile::NamedTempFile;
-use std::fs;
 
 #[test]
 fn test_restore_db() -> Result<(), Box<dyn std::error::Error>> {
@@ -29,8 +28,11 @@ fn test_restore_db() -> Result<(), Box<dyn std::error::Error>> {
     restore_db(backup_path, dest_db_path)?;
 
     // 4. Verify the restored database
-    let dest_conn = open_encrypted_db(dest_db_path, &mut key)?;
-    let count: i64 = dest_conn.query_row("SELECT COUNT(*) FROM transactions_history", [], |row| row.get(0))?;
+    let dest_conn = open_encrypted_db(dest_db_path, &mut key, true)?;
+    let count: i64 =
+        dest_conn.query_row("SELECT COUNT(*) FROM transactions_history", [], |row| {
+            row.get(0)
+        })?;
     assert_eq!(count, 1);
 
     Ok(())

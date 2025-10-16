@@ -1,7 +1,10 @@
-use ledger::db::{initialize_db, add_transaction, list_transactions, list_balances, get_balance, open_encrypted_db};
+use ledger_lib::db::EncryptionKey;
+use ledger_lib::db::{
+    add_transaction, get_balance, initialize_db, list_balances, list_transactions,
+    open_encrypted_db,
+};
+use ledger_lib::models::Balance;
 use rusqlite::Connection;
-use ledger::db::EncryptionKey;
-use ledger::models::Balance;
 use tempfile::NamedTempFile;
 
 #[test]
@@ -12,7 +15,9 @@ fn test_add_transaction() {
     let result = add_transaction(&conn, "John Doe", 1000, "2025-10-26", Some("Test"));
     assert!(result.is_ok());
 
-    let mut stmt = conn.prepare("SELECT COUNT(*) FROM transactions_history").unwrap();
+    let mut stmt = conn
+        .prepare("SELECT COUNT(*) FROM transactions_history")
+        .unwrap();
     let count: i64 = stmt.query_row([], |row| row.get(0)).unwrap();
     assert_eq!(count, 1);
 }
@@ -52,7 +57,8 @@ fn test_list_transactions() {
     assert_eq!(limited_transactions[0].person, "Alice");
 
     // Test combined filters
-    let filtered_limited = list_transactions(&conn, Some("Alice"), Some("2025-01-02"), Some(1)).unwrap();
+    let filtered_limited =
+        list_transactions(&conn, Some("Alice"), Some("2025-01-02"), Some(1)).unwrap();
     assert_eq!(filtered_limited.len(), 1);
     assert_eq!(filtered_limited[0].person, "Alice");
     assert_eq!(filtered_limited[0].date, "2025-01-03");
@@ -73,9 +79,18 @@ fn test_list_balances() {
     let balances = list_balances(&conn).unwrap();
 
     let mut expected_balances = vec![
-        Balance { person: "Alice".to_string(), balance: 50 },
-        Balance { person: "Bob".to_string(), balance: 50 },
-        Balance { person: "Charlie".to_string(), balance: 300 },
+        Balance {
+            person: "Alice".to_string(),
+            balance: 50,
+        },
+        Balance {
+            person: "Bob".to_string(),
+            balance: 50,
+        },
+        Balance {
+            person: "Charlie".to_string(),
+            balance: 300,
+        },
     ];
     expected_balances.sort_by(|a, b| a.person.cmp(&b.person));
 
@@ -113,17 +128,70 @@ fn test_open_encrypted_db() -> Result<(), Box<dyn std::error::Error>> {
     let mut wrong_key = EncryptionKey("wrong_key".to_string());
 
     // 1. Open and initialize with correct key
-    let conn = open_encrypted_db(db_path, &mut key)?;
+    let conn = open_encrypted_db(db_path, &mut key, false)?;
     initialize_db(&conn)?;
     conn.close().map_err(|(_, e)| e)?;
 
     // 2. Open with correct key again
-    let conn_ok = open_encrypted_db(db_path, &mut key);
+    let conn_ok = open_encrypted_db(db_path, &mut key, true);
     assert!(conn_ok.is_ok());
 
     // 3. Open with incorrect key
-    let conn_err = open_encrypted_db(db_path, &mut wrong_key);
+    let conn_err = open_encrypted_db(db_path, &mut wrong_key, true);
     assert!(conn_err.is_err());
 
     Ok(())
+}
+
+#[test]
+fn test_initialize_db_creates_new_columns() {
+    let conn = Connection::open_in_memory().unwrap();
+    initialize_db(&conn).unwrap();
+
+    let mut stmt = conn
+        .prepare("PRAGMA table_info(transactions_history)")
+        .unwrap();
+    let column_names: Vec<String> = stmt
+        .query_map([], |row| row.get(1))
+        .unwrap()
+        .map(|r| r.unwrap())
+        .collect();
+
+    assert!(column_names.contains(&"person".to_string()));
+    assert!(column_names.contains(&"date".to_string()));
+}
+
+#[test]
+fn test_add_transaction_inserts_person_and_date() {
+    let conn = Connection::open_in_memory().unwrap();
+    initialize_db(&conn).unwrap();
+
+    let person = "John Doe";
+    let date = "2025-10-26";
+    add_transaction(&conn, person, 1000, date, Some("Test")).unwrap();
+
+    let mut stmt = conn
+        .prepare("SELECT person, date FROM transactions_history")
+        .unwrap();
+    let (p, d): (String, String) = stmt
+        .query_row([], |row| Ok((row.get(0)?, row.get(1)?)))
+        .unwrap();
+
+    assert_eq!(p, person);
+    assert_eq!(d, date);
+}
+
+#[test]
+fn test_list_transactions_retrieves_person_and_date() {
+    let conn = Connection::open_in_memory().unwrap();
+    initialize_db(&conn).unwrap();
+
+    let person = "John Doe";
+    let date = "2025-10-26";
+    add_transaction(&conn, person, 1000, date, Some("Test")).unwrap();
+
+    let transactions = list_transactions(&conn, None, None, None).unwrap();
+    assert_eq!(transactions.len(), 1);
+    assert_eq!(transactions[0].person, person);
+    assert_eq!(transactions[0].date, date);
 }
