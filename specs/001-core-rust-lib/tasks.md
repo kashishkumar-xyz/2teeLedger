@@ -22,7 +22,7 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [] T001 Create Rust library project (`cdylib`) in `src/`
+- [x] T001 Create Rust library project (`cdylib`) in `src/`
 - [x] T002 Configure `Cargo.toml` with `rusqlite`, `jni`, `zeroize`, `base64`, `hmac`, `clap` dependencies
 - [x] T003 [P] Create `src/models.rs`, `src/db.rs`, `src/ffi.rs`, `src/key_management.rs`, `src/backup.rs`, `src/recovery.rs`
 - [x] T004 [P] Create `cli/src/main.rs` for the CLI application
@@ -40,13 +40,13 @@
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
 - [x] T009 Implement SQLCipher integration in `db.rs` (ensure `rusqlite` is compiled with SQLCipher feature)
-- [] T010 Implement DEK generation and Android Keystore wrapping/unwrapping in `key_management.rs`
-- [] T011 Implement `PRAGMA journal_mode = WAL;` and `PRAGMA integrity_check;` logic in `db.rs`
+- [x] T010 Implement DEK generation and Android Keystore wrapping/unwrapping in `key_management.rs`
+- [x] T011 Implement `PRAGMA journal_mode = WAL;` and `PRAGMA integrity_check;` logic in `db.rs`
 - [x] T012 Implement `open_encrypted_db` function in `db.rs`
-- [] T013 Implement `backup_db` FFI function in `backup.rs` and expose via `ffi.rs`
-- [] T014 Implement `restore_db` FFI function in `recovery.rs` and expose via `ffi.rs`
-- [] T015 Implement append-only `transactions_history` table schema in `db.rs` (migration logic)
-- [] T016 Implement zeroization of sensitive keys in `key_management.rs` and `db.rs`
+- [x] T013 Implement `backup_db` FFI function in `backup.rs` and expose via `ffi.rs`
+- [x] T014 Implement `restore_db` FFI function in `recovery.rs` and expose via `ffi.rs`
+- [x] T015 Implement append-only `transactions_history` table schema in `db.rs` (migration logic)
+- [x] T016 Implement zeroization of sensitive keys in `key_management.rs` and `db.rs`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
