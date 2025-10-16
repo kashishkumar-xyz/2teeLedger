@@ -287,7 +287,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             let result = unsafe { ledger_lib::ffi::open_db(db_path_c.as_ptr(), key_c.as_ptr()) };
 
-            let result_str = unsafe { CStr::from_ptr(result).to_str().unwrap() };
+            let result_str = unsafe { CStr::from_ptr(result).to_str().unwrap_or_else(|_| "Failed to open database: Invalid UTF-8 sequence") };
 
             let is_error = result_str.contains("Failed to open database");
 
