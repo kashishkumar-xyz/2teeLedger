@@ -1,6 +1,8 @@
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use crate::{backup, db, recovery};
+use serde_json;
+
 #[no_mangle]
 pub extern "C" fn add_transaction(
     db_path: *const c_char,
@@ -58,6 +60,42 @@ pub extern "C" fn init_db(db_path: *const c_char, encryption_key: *const c_char)
                 }
                 Err(e) => {
                     let error_msg = CString::new(format!("Database initialization failed: {}", e)).unwrap();
+                    error_msg.into_raw()
+                }
+            }
+        }
+        Err(e) => {
+            let error_msg = CString::new(format!("Failed to open database: {}", e)).unwrap();
+            error_msg.into_raw()
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn list_transactions(
+    db_path: *const c_char,
+    encryption_key: *const c_char,
+    person: *const c_char,
+    since_date: *const c_char,
+    limit: i32,
+) -> *const c_char {
+    let db_path_str = unsafe { CStr::from_ptr(db_path).to_str().unwrap() };
+    let encryption_key_str = unsafe { CStr::from_ptr(encryption_key).to_str().unwrap() };
+    let mut key = db::EncryptionKey(encryption_key_str.to_string());
+
+    let person_option = if person.is_null() { None } else { Some(unsafe { CStr::from_ptr(person).to_str().unwrap() }) };
+    let since_date_option = if since_date.is_null() { None } else { Some(unsafe { CStr::from_ptr(since_date).to_str().unwrap() }) };
+    let limit_option = if limit == 0 { None } else { Some(limit) };
+
+    match db::open_encrypted_db(db_path_str, &mut key) {
+        Ok(conn) => {
+            match db::list_transactions(&conn, person_option, since_date_option, limit_option) {
+                Ok(transactions) => {
+                    let json_string = serde_json::to_string(&transactions).unwrap();
+                    CString::new(json_string).unwrap().into_raw()
+                }
+                Err(e) => {
+                    let error_msg = CString::new(format!("Failed to list transactions: {}", e)).unwrap();
                     error_msg.into_raw()
                 }
             }

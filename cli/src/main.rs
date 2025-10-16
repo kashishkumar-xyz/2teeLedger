@@ -31,6 +31,10 @@ enum Commands {
     },
     /// Lists transactions
     List {
+        #[arg(long)]
+        db_path: String,
+        #[arg(long)]
+        encryption_key: String,
         #[arg(short, long)]
         person: Option<String>,
         #[arg(long)]
@@ -109,8 +113,30 @@ fn main() {
                 let _ = CString::from_raw(result as *mut _);
             }
         }
-        Commands::List { person, since_date, limit } => {
-            println!("Listing transactions for {:?} since {:?} with limit {:?}", person, since_date, limit);
+        Commands::List { db_path, encryption_key, person, since_date, limit } => {
+            let db_path_c = CString::new(db_path.as_str()).unwrap();
+            let key_c = CString::new(encryption_key.as_str()).unwrap();
+
+            let person_ptr = person.as_ref().map_or(std::ptr::null(), |s| CString::new(s.as_str()).unwrap().into_raw());
+            let since_date_ptr = since_date.as_ref().map_or(std::ptr::null(), |s| CString::new(s.as_str()).unwrap().into_raw());
+            let limit_val = limit.unwrap_or(0);
+
+            let result = ledger_lib::ffi::list_transactions(
+                db_path_c.as_ptr(),
+                key_c.as_ptr(),
+                person_ptr,
+                since_date_ptr,
+                limit_val,
+            );
+
+            let result_str = unsafe { CStr::from_ptr(result).to_str().unwrap() };
+            println!("{}", result_str);
+            // Free the C strings
+            unsafe {
+                if !person_ptr.is_null() { let _ = CString::from_raw(person_ptr as *mut _); }
+                if !since_date_ptr.is_null() { let _ = CString::from_raw(since_date_ptr as *mut _); }
+                let _ = CString::from_raw(result as *mut _);
+            }
         }
         Commands::Balance { person } => {
             println!("Getting balance for {}", person);

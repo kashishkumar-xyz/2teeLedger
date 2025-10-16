@@ -239,6 +239,7 @@ dependencies = [
  "ledger_lib",
  "predicates",
  "rusqlite",
+ "serde_json",
  "tempfile",
 ]
 

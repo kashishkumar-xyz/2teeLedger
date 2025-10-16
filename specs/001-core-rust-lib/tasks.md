@@ -88,15 +88,15 @@
 
 **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [] T025 [P] [US2] Unit test for `list_transactions` logic (reconstructing state from history) in `tests/unit/db_test.rs`
-- [] T026 [P] [US2] Unit test for `list_transactions` FFI exposure in `tests/unit/ffi_test.rs`
-- [] T027 [P] [US2] CLI integration test for `list` command in `tests/integration/cli_test.rs`
+- [x] T025 [P] [US2] Unit test for `list_transactions` logic (reconstructing state from history) in `tests/unit/db_test.rs`
+- [x] T026 [P] [US2] Unit test for `list_transactions` FFI exposure in `tests/unit/ffi_test.rs`
+- [x] T027 [P] [US2] CLI integration test for `list` command in `tests/integration/cli_test.rs`
 
 ### Implementation for User Story 2
 
-- [] T028 [US2] Implement `list_transactions` logic in `src/db.rs`
-- [] T029 [US2] Expose `list_transactions` via FFI in `src/ffi.rs`
-- [] T030 [US2] Implement `list` command in `cli/src/main.rs` to call `list_transactions` FFI
+- [x] T028 [US2] Implement `list_transactions` logic in `src/db.rs`
+- [x] T029 [US2] Expose `list_transactions` via FFI in `src/ffi.rs`
+- [x] T030 [US2] Implement `list` command in `cli/src/main.rs` to call `list_transactions` FFI
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 

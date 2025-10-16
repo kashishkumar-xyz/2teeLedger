@@ -1,5 +1,6 @@
-use ledger::db::{initialize_db, add_transaction};
+use ledger::db::{initialize_db, add_transaction, list_transactions};
 use rusqlite::Connection;
+use ledger::db::EncryptionKey;
 
 #[test]
 fn test_add_transaction() {
@@ -12,4 +13,45 @@ fn test_add_transaction() {
     let mut stmt = conn.prepare("SELECT COUNT(*) FROM transactions_history").unwrap();
     let count: i64 = stmt.query_row([], |row| row.get(0)).unwrap();
     assert_eq!(count, 1);
+}
+
+#[test]
+fn test_list_transactions() {
+    let conn = Connection::open_in_memory().unwrap();
+    initialize_db(&conn).unwrap();
+
+    // Add some transactions
+    add_transaction(&conn, "Alice", 100, "2025-01-01", None).unwrap();
+    add_transaction(&conn, "Bob", 200, "2025-01-02", Some("Lunch")).unwrap();
+    add_transaction(&conn, "Alice", 150, "2025-01-03", Some("Dinner")).unwrap();
+
+    // Test listing all transactions
+    let all_transactions = list_transactions(&conn, None, None, None).unwrap();
+    assert_eq!(all_transactions.len(), 3);
+    assert_eq!(all_transactions[0].person, "Alice"); // Ordered by date DESC
+    assert_eq!(all_transactions[1].person, "Bob");
+    assert_eq!(all_transactions[2].person, "Alice");
+
+    // Test filtering by person
+    let alice_transactions = list_transactions(&conn, Some("Alice"), None, None).unwrap();
+    assert_eq!(alice_transactions.len(), 2);
+    assert_eq!(alice_transactions[0].person, "Alice");
+    assert_eq!(alice_transactions[1].person, "Alice");
+
+    // Test filtering by since_date
+    let recent_transactions = list_transactions(&conn, None, Some("2025-01-02"), None).unwrap();
+    assert_eq!(recent_transactions.len(), 2);
+    assert_eq!(recent_transactions[0].date, "2025-01-03");
+    assert_eq!(recent_transactions[1].date, "2025-01-02");
+
+    // Test limiting results
+    let limited_transactions = list_transactions(&conn, None, None, Some(1)).unwrap();
+    assert_eq!(limited_transactions.len(), 1);
+    assert_eq!(limited_transactions[0].person, "Alice");
+
+    // Test combined filters
+    let filtered_limited = list_transactions(&conn, Some("Alice"), Some("2025-01-02"), Some(1)).unwrap();
+    assert_eq!(filtered_limited.len(), 1);
+    assert_eq!(filtered_limited[0].person, "Alice");
+    assert_eq!(filtered_limited[0].date, "2025-01-03");
 }

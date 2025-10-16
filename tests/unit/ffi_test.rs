@@ -1,7 +1,8 @@
-use ledger::ffi::{init_db, add_transaction};
+use ledger_lib::ffi::{init_db, add_transaction, list_transactions};
 use std::ffi::CString;
 use std::ptr;
 use tempfile::NamedTempFile;
+use serde_json::Value;
 
 #[test]
 fn test_add_transaction_ffi() {
@@ -27,4 +28,46 @@ fn test_add_transaction_ffi() {
     );
     let result_str = unsafe { CString::from_raw(result as *mut _) };
     assert_eq!(result_str.to_str().unwrap(), "Transaction added successfully");
+}
+
+#[test]
+fn test_list_transactions_ffi() {
+    let db_file = NamedTempFile::new().unwrap();
+    let db_path = CString::new(db_file.path().to_str().unwrap()).unwrap();
+    let key = CString::new("test_key").unwrap();
+
+    // Initialize DB
+    let init_result = init_db(db_path.as_ptr(), key.as_ptr());
+    let _ = unsafe { CString::from_raw(init_result as *mut _) }; // Free CString
+
+    // Add transactions
+    let person1 = CString::new("Alice").unwrap();
+    let date1 = CString::new("2025-01-01").unwrap();
+    let add_result1 = add_transaction(db_path.as_ptr(), key.as_ptr(), person1.as_ptr(), 100, date1.as_ptr(), ptr::null());
+    let _ = unsafe { CString::from_raw(add_result1 as *mut _) };
+
+    let person2 = CString::new("Bob").unwrap();
+    let date2 = CString::new("2025-01-02").unwrap();
+    let add_result2 = add_transaction(db_path.as_ptr(), key.as_ptr(), person2.as_ptr(), 200, date2.as_ptr(), ptr::null());
+    let _ = unsafe { CString::from_raw(add_result2 as *mut _) };
+
+    // List all transactions
+    let list_result = list_transactions(db_path.as_ptr(), key.as_ptr(), ptr::null(), ptr::null(), 0);
+    let list_result_str = unsafe { CString::from_raw(list_result as *mut _) };
+    let transactions: Value = serde_json::from_str(list_result_str.to_str().unwrap()).unwrap();
+
+    assert!(transactions.is_array());
+    assert_eq!(transactions.as_array().unwrap().len(), 2);
+    assert_eq!(transactions.as_array().unwrap()[0]["person"], "Bob"); // Ordered by date DESC
+    assert_eq!(transactions.as_array().unwrap()[1]["person"], "Alice");
+
+    // List transactions for Alice
+    let person_filter = CString::new("Alice").unwrap();
+    let list_result_alice = list_transactions(db_path.as_ptr(), key.as_ptr(), person_filter.as_ptr(), ptr::null(), 0);
+    let list_result_alice_str = unsafe { CString::from_raw(list_result_alice as *mut _) };
+    let alice_transactions: Value = serde_json::from_str(list_result_alice_str.to_str().unwrap()).unwrap();
+
+    assert!(alice_transactions.is_array());
+    assert_eq!(alice_transactions.as_array().unwrap().len(), 1);
+    assert_eq!(alice_transactions.as_array().unwrap()[0]["person"], "Alice");
 }

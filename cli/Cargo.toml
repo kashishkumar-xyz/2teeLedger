@@ -12,6 +12,7 @@ assert_cmd = "2.0"
 predicates = "3.0"
 tempfile = "3.8.1"
 rusqlite = { version = "0.30.0", features = ["sqlcipher"] }
+serde_json = "1.0"
 
 [[test]]
 name = "cli_test"

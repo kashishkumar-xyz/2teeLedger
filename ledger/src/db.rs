@@ -2,6 +2,7 @@ use rusqlite::{Connection, Result};
 use zeroize::Zeroize;
 use crate::models::Transaction;
 use uuid::Uuid;
+use chrono::{NaiveDate, Utc};
 
 pub fn add_transaction(
     conn: &Connection,
@@ -35,7 +36,7 @@ pub fn add_transaction(
     let tx_id = Uuid::new_v4().to_string();
     let version = 1;
     let op = "insert";
-    let created_at = chrono::Utc::now().to_rfc3339();
+    let created_at = Utc::now().to_rfc3339();
 
     conn.execute(
         "INSERT INTO transactions_history (tx_id, version, data, op, created_at) VALUES (?1, ?2, ?3, ?4, ?5)",
@@ -43,6 +44,53 @@ pub fn add_transaction(
     )?;
 
     Ok(())
+}
+
+pub fn list_transactions(
+    conn: &Connection,
+    person: Option<&str>,
+    since_date: Option<&str>,
+    limit: Option<i32>,
+) -> Result<Vec<Transaction>, Box<dyn std::error::Error>> {
+    let mut query = "SELECT data FROM transactions_history WHERE op != 'delete'".to_string();
+    let mut params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+
+    if let Some(p) = person {
+        query.push_str(" AND JSON_EXTRACT(data, '$.person') = ?");
+        params.push(Box::new(p.to_string()));
+    }
+
+    if let Some(d) = since_date {
+        // Basic date validation
+        if NaiveDate::parse_from_str(d, "%Y-%m-%d").is_err() {
+            return Err("Invalid date format. Expected YYYY-MM-DD".into());
+        }
+        query.push_str(" AND JSON_EXTRACT(data, '$.date') >= ?");
+        params.push(Box::new(d.to_string()));
+    }
+
+    query.push_str(" ORDER BY JSON_EXTRACT(data, '$.date') DESC, created_at DESC");
+
+    if let Some(l) = limit {
+        query.push_str(&format!(" LIMIT {}", l));
+    }
+
+    let mut stmt = conn.prepare(&query)?;
+    let transaction_iter = stmt.query_map(
+        params.iter().map(|p| p.as_ref()).collect::<Vec<&dyn rusqlite::ToSql>>().as_slice(),
+        |row| {
+            let data_str: String = row.get(0)?;
+            serde_json::from_str(&data_str)
+                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(e)))
+        },
+    )?;
+
+    let mut transactions = Vec::new();
+    for transaction in transaction_iter {
+        transactions.push(transaction?);
+    }
+
+    Ok(transactions)
 }
 
 #[derive(Zeroize)]
