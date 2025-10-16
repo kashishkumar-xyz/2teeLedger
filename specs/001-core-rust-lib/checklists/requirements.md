@@ -2,7 +2,7 @@
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2025-10-14
-**Feature**: /home/kaz/Dev/rust/_current/teeLedger/specs/001-phase-1-core/spec.md
+**Feature**: /home/kaz/Dev/rust/_current/teeLedger/specs/001-core-rust-lib/spec.md
 
 ## Content Quality
 

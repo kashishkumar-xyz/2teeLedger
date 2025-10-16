@@ -1,0 +1,259 @@
+use assert_cmd::prelude::*;
+use predicates::prelude::*;
+use std::process::Command;
+use tempfile::NamedTempFile;
+use rusqlite::Connection;
+use serde_json::Value;
+use std::fs;
+
+#[test]
+fn test_cli_add_transaction() -> Result<(), Box<dyn std::error::Error>> {
+    let db_file = NamedTempFile::new()?;
+    let db_path = db_file.path().to_str().unwrap();
+    let key = "test_key";
+
+    // 1. Initialize the database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("init-db").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key);
+    cmd.assert().success().stdout(predicate::str::contains("Database initialized successfully"));
+
+    // 2. Add a transaction via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path) // Pass the same db_path
+        .arg("--encryption-key").arg(key) // Pass the same key
+        .arg("--person").arg("Alice")
+        .arg("--amount").arg("100")
+        .arg("--date").arg("2025-01-01");
+    cmd.assert().success().stdout(predicate::str::contains("Transaction added successfully"));
+
+    // 3. Verify the data was written correctly by opening the DB directly
+    let conn = Connection::open(db_path)?;
+    conn.pragma_update(None, "key", &key)?;
+    let count: i64 = conn.query_row("SELECT COUNT(*) FROM transactions_history", [], |row| row.get(0))?;
+    assert_eq!(count, 1);
+
+    Ok(())}
+
+#[test]
+fn test_cli_list_transactions() -> Result<(), Box<dyn std::error::Error>> {
+    let db_file = NamedTempFile::new()?;
+    let db_path = db_file.path().to_str().unwrap();
+    let key = "test_key";
+
+    // 1. Initialize the database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("init-db").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key);
+    cmd.assert().success().stdout(predicate::str::contains("Database initialized successfully"));
+
+    // 2. Add some transactions via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice").arg("--amount").arg("100").arg("--date").arg("2025-01-01");
+    cmd.assert().success();
+
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Bob").arg("--amount").arg("200").arg("--date").arg("2025-01-02");
+    cmd.assert().success();
+
+    // 3. List all transactions via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("list").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key);
+    let output = cmd.assert().success().stdout(predicate::str::is_empty().not()).get_output().stdout.clone();
+    let transactions: Value = serde_json::from_slice(&output)?;
+
+    assert!(transactions.is_array());
+    assert_eq!(transactions.as_array().unwrap().len(), 2);
+    assert_eq!(transactions.as_array().unwrap()[0]["person"], "Bob"); // Ordered by date DESC
+    assert_eq!(transactions.as_array().unwrap()[1]["person"], "Alice");
+
+    // 4. List transactions for Alice via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("list").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice");
+    let output_alice = cmd.assert().success().stdout(predicate::str::is_empty().not()).get_output().stdout.clone();
+    let alice_transactions: Value = serde_json::from_slice(&output_alice)?;
+
+    assert!(alice_transactions.is_array());
+    assert_eq!(alice_transactions.as_array().unwrap().len(), 1);
+    assert_eq!(alice_transactions.as_array().unwrap()[0]["person"], "Alice");
+
+    Ok(())
+}
+
+#[test]
+fn test_cli_list_balances() -> Result<(), Box<dyn std::error::Error>> {
+    let db_file = NamedTempFile::new()?;
+    let db_path = db_file.path().to_str().unwrap();
+    let key = "test_key";
+
+    // 1. Initialize the database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("init-db").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key);
+    cmd.assert().success().stdout(predicate::str::contains("Database initialized successfully"));
+
+    // 2. Add some transactions via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice").arg("--amount").arg("100").arg("--date").arg("2025-01-01");
+    cmd.assert().success();
+
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Bob").arg("--amount").arg("200").arg("--date").arg("2025-01-02");
+    cmd.assert().success();
+
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice").arg("--amount").arg("-50").arg("--date").arg("2025-01-03");
+    cmd.assert().success();
+
+    // 3. List balances via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("balances").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key);
+    let output = cmd.assert().success().stdout(predicate::str::is_empty().not()).get_output().stdout.clone();
+    let balances: Value = serde_json::from_slice(&output)?;
+
+    assert!(balances.is_array());
+    assert_eq!(balances.as_array().unwrap().len(), 2);
+
+    let alice_balance = balances.as_array().unwrap().iter().find(|b| b["person"] == "Alice").unwrap();
+    assert_eq!(alice_balance["balance"], 50);
+
+    let bob_balance = balances.as_array().unwrap().iter().find(|b| b["person"] == "Bob").unwrap();
+    assert_eq!(bob_balance["balance"], 200);
+
+    Ok(())
+}
+
+#[test]
+fn test_cli_get_balance() -> Result<(), Box<dyn std::error::Error>> {
+    let db_file = NamedTempFile::new()?;
+    let db_path = db_file.path().to_str().unwrap();
+    let key = "test_key";
+
+    // 1. Initialize the database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("init-db").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key);
+    cmd.assert().success().stdout(predicate::str::contains("Database initialized successfully"));
+
+    // 2. Add some transactions via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice").arg("--amount").arg("100").arg("--date").arg("2025-01-01");
+    cmd.assert().success();
+
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Bob").arg("--amount").arg("200").arg("--date").arg("2025-01-02");
+    cmd.assert().success();
+
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice").arg("--amount").arg("-50").arg("--date").arg("2025-01-03");
+    cmd.assert().success();
+
+    // 3. Get balance for Alice via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("balance").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice");
+    let _output = cmd.assert().success().stdout(predicate::str::contains("50")).get_output().stdout.clone();
+
+    // 4. Get balance for Bob via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("balance").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Bob");
+    let _output = cmd.assert().success().stdout(predicate::str::contains("200")).get_output().stdout.clone();
+
+    // 5. Get balance for Charlie (non-existent) via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("balance").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Charlie");
+    let _output = cmd.assert().success().stdout(predicate::str::contains("0")).get_output().stdout.clone();
+
+    Ok(())
+}
+
+#[test]
+fn test_cli_backup_db() -> Result<(), Box<dyn std::error::Error>> {
+    let db_file = NamedTempFile::new()?;
+    let db_path = db_file.path().to_str().unwrap();
+    let backup_file = NamedTempFile::new()?;
+    let backup_path = backup_file.path().to_str().unwrap();
+    let key = "test_key";
+
+    // 1. Initialize the database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("init-db").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key);
+    cmd.assert().success().stdout(predicate::str::contains("Database initialized successfully"));
+
+    // 2. Add a transaction via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice").arg("--amount").arg("100").arg("--date").arg("2025-01-01");
+    cmd.assert().success();
+
+    // 3. Backup the database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("backup-db").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--backup-path").arg(backup_path);
+    cmd.assert().success().stdout(predicate::str::contains("Backup successful"));
+
+    // 4. Verify the backup file exists and is not empty
+    assert!(fs::metadata(backup_path)?.len() > 0);
+
+    Ok(())
+}
+
+#[test]
+fn test_cli_restore_db() -> Result<(), Box<dyn std::error::Error>> {
+    let src_db_file = NamedTempFile::new()?;
+    let src_db_path = src_db_file.path().to_str().unwrap();
+    let backup_file = NamedTempFile::new()?;
+    let backup_path = backup_file.path().to_str().unwrap();
+    let dest_db_file = NamedTempFile::new()?;
+    let dest_db_path = dest_db_file.path().to_str().unwrap();
+    let key = "test_key";
+
+    // 1. Initialize the source database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("init-db").arg("--db-path").arg(src_db_path).arg("--encryption-key").arg(key);
+    cmd.assert().success().stdout(predicate::str::contains("Database initialized successfully"));
+
+    // 2. Add a transaction to the source database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(src_db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice").arg("--amount").arg("100").arg("--date").arg("2025-01-01");
+    cmd.assert().success();
+
+    // 3. Backup the source database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("backup-db").arg("--db-path").arg(src_db_path).arg("--encryption-key").arg(key)
+        .arg("--backup-path").arg(backup_path);
+    cmd.assert().success().stdout(predicate::str::contains("Backup successful"));
+
+    // 4. Restore the backup to a new destination database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("restore-db").arg("--backup-path").arg(backup_path).arg("--encryption-key").arg(key)
+        .arg("--db-path").arg(dest_db_path);
+    cmd.assert().success().stdout(predicate::str::contains("Restore successful"));
+
+    // 5. Verify the restored database contains the original transactions
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("balance").arg("--db-path").arg(dest_db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice");
+    cmd.assert().success().stdout(predicate::str::contains("100"));
+
+    Ok(())
+}

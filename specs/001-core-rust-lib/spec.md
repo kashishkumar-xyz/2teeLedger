@@ -1,6 +1,6 @@
 # Feature Specification: Core Rust Library Development
 
-**Feature Branch**: `001-phase-1-core`  
+**Feature Branch**: `001-core-rust-lib`  
 **Created**: 2025-10-14  
 **Status**: In Progress  
 **Input**: User description: "## Phase 1: Core Rust Library Development

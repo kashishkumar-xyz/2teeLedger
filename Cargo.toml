@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "ledger",
+    "cli",
+]
+resolver = "2"
