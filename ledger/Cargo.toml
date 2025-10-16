@@ -28,3 +28,31 @@ serde_json = "1.0"
 [[test]]
 name = "ledger_integration_test"
 path = "../tests/integration/ledger_integration_test.rs"
+
+[[test]]
+name = "backup_test"
+path = "../tests/unit/backup_test.rs"
+
+[[test]]
+name = "db_test"
+path = "../tests/unit/db_test.rs"
+
+[[test]]
+name = "ffi_test"
+path = "../tests/unit/ffi_test.rs"
+
+[[test]]
+name = "key_management_test"
+path = "../tests/unit/key_management_test.rs"
+
+[[test]]
+name = "models_test"
+path = "../tests/unit/models_test.rs"
+
+[[test]]
+name = "recovery_test"
+path = "../tests/unit/recovery_test.rs"
+
+[[test]]
+name = "list_performance_test"
+path = "../tests/performance/list_performance_test.rs"

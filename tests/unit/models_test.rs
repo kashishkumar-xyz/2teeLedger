@@ -1,4 +1,4 @@
-use ledger::models::{Transaction, Balance};
+use ledger_lib::models::{Balance, Transaction};
 
 #[test]
 fn test_transaction_serialization() {

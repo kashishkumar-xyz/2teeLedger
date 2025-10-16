@@ -10,8 +10,7 @@ pub fn generate_dek(dek: &mut [u8; 32]) {
 // In a real Android application, this would use a KEK from the Android Keystore to encrypt the DEK.
 pub fn wrap_dek(dek: &[u8]) -> Vec<u8> {
     // For this mock, we'll just return the DEK as is.
-    let wrapped_dek = dek.to_vec();
-    wrapped_dek
+    dek.to_vec()
 }
 
 // Mock implementation for unwrapping a DEK.
