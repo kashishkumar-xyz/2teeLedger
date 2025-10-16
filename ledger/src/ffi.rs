@@ -24,7 +24,7 @@ pub extern "C" fn add_transaction(
         Some(unsafe { CStr::from_ptr(note).to_str().unwrap() })
     };
 
-    match db::open_encrypted_db(db_path_str, &mut key) {
+    match db::open_encrypted_db(db_path_str, &mut key, true) {
         Ok(conn) => {
             match db::add_transaction(&conn, person_str, amount, date_str, note_str) {
                 Ok(_) => {
@@ -51,7 +51,7 @@ pub extern "C" fn init_db(db_path: *const c_char, encryption_key: *const c_char)
     let encryption_key_str = unsafe { CStr::from_ptr(encryption_key).to_str().unwrap() };
     let mut key = db::EncryptionKey(encryption_key_str.to_string());
 
-    match db::open_encrypted_db(db_path_str, &mut key) {
+    match db::open_encrypted_db(db_path_str, &mut key, false) {
         Ok(conn) => {
             match db::initialize_db(&conn) {
                 Ok(_) => {
@@ -63,6 +63,24 @@ pub extern "C" fn init_db(db_path: *const c_char, encryption_key: *const c_char)
                     error_msg.into_raw()
                 }
             }
+        }
+        Err(e) => {
+            let error_msg = CString::new(format!("Failed to open database: {}", e)).unwrap();
+            error_msg.into_raw()
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn open_db(db_path: *const c_char, encryption_key: *const c_char) -> *const c_char {
+    let db_path_str = unsafe { CStr::from_ptr(db_path).to_str().unwrap() };
+    let encryption_key_str = unsafe { CStr::from_ptr(encryption_key).to_str().unwrap() };
+    let mut key = db::EncryptionKey(encryption_key_str.to_string());
+
+    match db::open_encrypted_db(db_path_str, &mut key, true) {
+        Ok(_) => {
+            let success_msg = CString::new("Database opened successfully").unwrap();
+            success_msg.into_raw()
         }
         Err(e) => {
             let error_msg = CString::new(format!("Failed to open database: {}", e)).unwrap();
@@ -87,7 +105,7 @@ pub extern "C" fn list_transactions(
     let since_date_option = if since_date.is_null() { None } else { Some(unsafe { CStr::from_ptr(since_date).to_str().unwrap() }) };
     let limit_option = if limit == 0 { None } else { Some(limit) };
 
-    match db::open_encrypted_db(db_path_str, &mut key) {
+    match db::open_encrypted_db(db_path_str, &mut key, true) {
         Ok(conn) => {
             match db::list_transactions(&conn, person_option, since_date_option, limit_option) {
                 Ok(transactions) => {
@@ -116,7 +134,7 @@ pub extern "C" fn list_balances(
     let encryption_key_str = unsafe { CStr::from_ptr(encryption_key).to_str().unwrap() };
     let mut key = db::EncryptionKey(encryption_key_str.to_string());
 
-    match db::open_encrypted_db(db_path_str, &mut key) {
+    match db::open_encrypted_db(db_path_str, &mut key, true) {
         Ok(conn) => {
             match db::list_balances(&conn) {
                 Ok(balances) => {
@@ -147,7 +165,7 @@ pub extern "C" fn get_balance(
     let mut key = db::EncryptionKey(encryption_key_str.to_string());
     let person_str = unsafe { CStr::from_ptr(person).to_str().unwrap() };
 
-    match db::open_encrypted_db(db_path_str, &mut key) {
+    match db::open_encrypted_db(db_path_str, &mut key, true) {
         Ok(conn) => {
             match db::get_balance(&conn, person_str) {
                 Ok(balance) => {

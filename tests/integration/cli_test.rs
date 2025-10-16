@@ -4,6 +4,7 @@ use std::process::Command;
 use tempfile::NamedTempFile;
 use rusqlite::Connection;
 use serde_json::Value;
+use std::fs;
 
 #[test]
 fn test_cli_add_transaction() -> Result<(), Box<dyn std::error::Error>> {
@@ -178,6 +179,81 @@ fn test_cli_get_balance() -> Result<(), Box<dyn std::error::Error>> {
     cmd.arg("balance").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
         .arg("--person").arg("Charlie");
     let _output = cmd.assert().success().stdout(predicate::str::contains("0")).get_output().stdout.clone();
+
+    Ok(())
+}
+
+#[test]
+fn test_cli_backup_db() -> Result<(), Box<dyn std::error::Error>> {
+    let db_file = NamedTempFile::new()?;
+    let db_path = db_file.path().to_str().unwrap();
+    let backup_file = NamedTempFile::new()?;
+    let backup_path = backup_file.path().to_str().unwrap();
+    let key = "test_key";
+
+    // 1. Initialize the database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("init-db").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key);
+    cmd.assert().success().stdout(predicate::str::contains("Database initialized successfully"));
+
+    // 2. Add a transaction via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice").arg("--amount").arg("100").arg("--date").arg("2025-01-01");
+    cmd.assert().success();
+
+    // 3. Backup the database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("backup-db").arg("--db-path").arg(db_path).arg("--encryption-key").arg(key)
+        .arg("--backup-path").arg(backup_path);
+    cmd.assert().success().stdout(predicate::str::contains("Backup successful"));
+
+    // 4. Verify the backup file exists and is not empty
+    assert!(fs::metadata(backup_path)?.len() > 0);
+
+    Ok(())
+}
+
+#[test]
+fn test_cli_restore_db() -> Result<(), Box<dyn std::error::Error>> {
+    let src_db_file = NamedTempFile::new()?;
+    let src_db_path = src_db_file.path().to_str().unwrap();
+    let backup_file = NamedTempFile::new()?;
+    let backup_path = backup_file.path().to_str().unwrap();
+    let dest_db_file = NamedTempFile::new()?;
+    let dest_db_path = dest_db_file.path().to_str().unwrap();
+    let key = "test_key";
+
+    // 1. Initialize the source database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("init-db").arg("--db-path").arg(src_db_path).arg("--encryption-key").arg(key);
+    cmd.assert().success().stdout(predicate::str::contains("Database initialized successfully"));
+
+    // 2. Add a transaction to the source database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("add")
+        .arg("--db-path").arg(src_db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice").arg("--amount").arg("100").arg("--date").arg("2025-01-01");
+    cmd.assert().success();
+
+    // 3. Backup the source database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("backup-db").arg("--db-path").arg(src_db_path).arg("--encryption-key").arg(key)
+        .arg("--backup-path").arg(backup_path);
+    cmd.assert().success().stdout(predicate::str::contains("Backup successful"));
+
+    // 4. Restore the backup to a new destination database via the CLI
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("restore-db").arg("--backup-path").arg(backup_path).arg("--encryption-key").arg(key)
+        .arg("--db-path").arg(dest_db_path);
+    cmd.assert().success().stdout(predicate::str::contains("Restore successful"));
+
+    // 5. Verify the restored database contains the original transactions
+    let mut cmd = Command::cargo_bin("cli")?;
+    cmd.arg("balance").arg("--db-path").arg(dest_db_path).arg("--encryption-key").arg(key)
+        .arg("--person").arg("Alice");
+    cmd.assert().success().stdout(predicate::str::contains("100"));
 
     Ok(())
 }

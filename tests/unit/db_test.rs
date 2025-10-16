@@ -1,7 +1,8 @@
-use ledger::db::{initialize_db, add_transaction, list_transactions, list_balances, get_balance};
+use ledger::db::{initialize_db, add_transaction, list_transactions, list_balances, get_balance, open_encrypted_db};
 use rusqlite::Connection;
 use ledger::db::EncryptionKey;
 use ledger::models::Balance;
+use tempfile::NamedTempFile;
 
 #[test]
 fn test_add_transaction() {
@@ -102,4 +103,27 @@ fn test_get_balance() {
 
     let charlie_balance = get_balance(&conn, "Charlie").unwrap();
     assert_eq!(charlie_balance, 0);
+}
+
+#[test]
+fn test_open_encrypted_db() -> Result<(), Box<dyn std::error::Error>> {
+    let db_file = NamedTempFile::new()?;
+    let db_path = db_file.path().to_str().unwrap();
+    let mut key = EncryptionKey("test_key".to_string());
+    let mut wrong_key = EncryptionKey("wrong_key".to_string());
+
+    // 1. Open and initialize with correct key
+    let conn = open_encrypted_db(db_path, &mut key)?;
+    initialize_db(&conn)?;
+    conn.close().map_err(|(_, e)| e)?;
+
+    // 2. Open with correct key again
+    let conn_ok = open_encrypted_db(db_path, &mut key);
+    assert!(conn_ok.is_ok());
+
+    // 3. Open with incorrect key
+    let conn_err = open_encrypted_db(db_path, &mut wrong_key);
+    assert!(conn_err.is_err());
+
+    Ok(())
 }

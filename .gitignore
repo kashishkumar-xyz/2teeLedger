@@ -38,4 +38,5 @@ Thumbs.db
 .vscode/
 .idea/
 
-Cargo.lock
+# Perosnal & AI Notes
+.notes/

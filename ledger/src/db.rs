@@ -136,7 +136,7 @@ pub fn initialize_db(conn: &Connection) -> Result<()> {
     Ok(())
 }
 
-pub fn open_encrypted_db(db_path: &str, key: &mut EncryptionKey) -> Result<Connection> {
+pub fn open_encrypted_db(db_path: &str, key: &mut EncryptionKey, check_table: bool) -> Result<Connection> {
     let conn = Connection::open(db_path)?;
     conn.pragma_update(None, "key", &key.0)?;
     conn.pragma_update(None, "journal_mode", "WAL")?;
@@ -145,6 +145,17 @@ pub fn open_encrypted_db(db_path: &str, key: &mut EncryptionKey) -> Result<Conne
         // This is a simplified error handling. In a real application, you would
         // want to handle this more gracefully, perhaps by attempting a recovery.
         return Err(rusqlite::Error::ExecuteReturnedResults);
+    }
+    if check_table {
+        // Check if the expected table exists to verify the key is correct
+        let table_count: i64 = conn.query_row(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='transactions_history'",
+            [],
+            |row| row.get(0),
+        )?;
+        if table_count == 0 {
+            return Err(rusqlite::Error::ExecuteReturnedResults);
+        }
     }
     Ok(conn)
 }

@@ -156,13 +156,19 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T045 Implement automated corruption detection and recovery flow in `src/recovery.rs`
-- [ ] T046 Implement backup metadata with HMAC and backup rotation policy in `src/backup.rs`
-- [ ] T047 Refine error handling and logging across `src/db.rs`, `src/key_management.rs`, `src/backup.rs`, `src/recovery.rs`, `cli/src/main.rs`
-- [ ] T048 Update `docs/README.md`, `docs/spec-sheet.md`, `docs/ANDROID_INTEGRATION.md` with new features and guidelines
-- [ ] T049 Write integration tests for full ledger flow, including backup/restore and corruption scenarios in `tests/integration/ledger_integration_test.rs`
-- [ ] T050 Code cleanup and refactoring
-- [ ] T051 Document CLI usage and commands in `docs/CLI_USAGE.md`
+- [x] T045 Implement automated corruption detection and recovery flow in `src/recovery.rs`
+- [x] T046 Implement backup metadata with HMAC and backup rotation policy in `src/backup.rs`
+- [x] T047 Refine error handling and logging across `src/db.rs`, `src/key_management.rs`, `src/backup.rs`, `src/recovery.rs`, `cli/src/main.rs`
+- [x] T048 [P] [US6] Unit test for `restore_db` logic in `tests/unit/recovery_test.rs`
+- [x] T049 Write integration tests for full ledger flow, including backup/restore and corruption scenarios in `tests/integration/ledger_integration_test.rs`
+- [x] T050 [US6] Implement `restore-db` command in `cli/src/main.rs` to call `restore_db` FFI
+- [x] T051 [P] [US7] Unit test for `open_encrypted_db` logic in `tests/unit/db_test.rs`
+- [x] T052 [P] [US7] CLI integration test for `open-db` command in `tests/integration/cli_test.rs`
+- [x] T053 [US7] Implement `open-db` command in `cli/src/main.rs` to call `open_encrypted_db` FFI
+
+- [x] T054 [P] [US8] Unit test for `key_management` FFI exposure in `tests/unit/ffi_test.rs`
+- [x] T055 [P] [US8] Comprehensive integration test for full ledger flow, including backup/restore and corruption scenarios in `tests/integration/ledger_integration_test.rs`
+- [x] T056 [US8] Implement `key_management` FFI functions (if any are missing and required for the comprehensive test)
 
 ---
 

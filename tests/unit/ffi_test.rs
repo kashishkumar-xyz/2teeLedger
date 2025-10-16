@@ -1,4 +1,4 @@
-use ledger_lib::ffi::{init_db, add_transaction, list_transactions, list_balances, get_balance};
+use ledger_lib::ffi::{init_db, add_transaction, list_transactions, list_balances, get_balance, open_db};
 use std::ffi::CString;
 use std::ptr;
 use tempfile::NamedTempFile;
@@ -156,4 +156,27 @@ fn test_get_balance_ffi() {
     let charlie_balance_result = get_balance(db_path.as_ptr(), key.as_ptr(), person_charlie.as_ptr());
     let charlie_balance_str = unsafe { CString::from_raw(charlie_balance_result as *mut _) };
     assert_eq!(charlie_balance_str.to_str().unwrap(), "0");
+}
+
+#[test]
+fn test_key_management_ffi_init_open() {
+    let db_file = NamedTempFile::new().unwrap();
+    let db_path = CString::new(db_file.path().to_str().unwrap()).unwrap();
+    let key = CString::new("test_key").unwrap();
+    let wrong_key = CString::new("wrong_key").unwrap();
+
+    // 1. Initialize DB with correct key
+    let init_result = init_db(db_path.as_ptr(), key.as_ptr());
+    let init_result_str = unsafe { CString::from_raw(init_result as *mut _) };
+    assert_eq!(init_result_str.to_str().unwrap(), "Database initialized successfully");
+
+    // 2. Open DB with correct key
+    let open_result_ok = open_db(db_path.as_ptr(), key.as_ptr());
+    let open_result_ok_str = unsafe { CString::from_raw(open_result_ok as *mut _) };
+    assert_eq!(open_result_ok_str.to_str().unwrap(), "Database opened successfully");
+
+    // 3. Open DB with wrong key
+    let open_result_err = open_db(db_path.as_ptr(), wrong_key.as_ptr());
+    let open_result_err_str = unsafe { CString::from_raw(open_result_err as *mut _) };
+    assert!(open_result_err_str.to_str().unwrap().contains("Failed to open database"));
 }
