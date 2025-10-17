@@ -40,3 +40,26 @@ Thumbs.db
 
 # Perosnal & AI Notes
 .notes/
+
+# Android
+/android/app/build/
+/android/build/
+/android/.gradle/
+/android/.idea/
+/android/local.properties
+/android/app/src/main/jniLibs/
+*.apk
+*.aab
+*.ap_
+*.a_
+*.apks
+*.dex
+*.class
+*.jks
+*.keystore
+*.jar
+android/.gradle/file-system.probe
+android/.gradle/buildOutputCleanup/
+android/.gradle/9.0-milestone-1/executionHistory/executionHistory.lock
+android/.gradle/9.0-milestone-1/fileHashes/fileHashes.bin
+android/.gradle/9.0-milestone-1/
