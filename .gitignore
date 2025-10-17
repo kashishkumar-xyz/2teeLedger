@@ -40,3 +40,9 @@ Thumbs.db
 
 # Perosnal & AI Notes
 .notes/
+
+# Java/Android
+*.class
+*.jar
+.gradle/
+build/

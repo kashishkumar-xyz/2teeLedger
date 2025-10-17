@@ -1,0 +1,33 @@
+[versions]
+
+appCompat = "1.7.1"
+androidGradlePlugin = "8.5.0"
+kotlin = "1.9.22"
+coreKtx = "1.17.0"
+material = "1.13.0"
+lifecycleViewmodelKtx = "2.9.4"
+activityKtx = "1.11.0"
+gson = "2.13.2"
+junit = "4.13.2"
+mockitoCore = "5.20.0"
+androidxTestExtJunit = "1.3.0"
+espressoCore = "3.7.0"
+
+[libraries]
+
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appCompat" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockitoCore" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+[plugins]
+
+androidApplication = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }
