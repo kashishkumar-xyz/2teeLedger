@@ -1,27 +1,30 @@
-# Quickstart: Android UI Development
+# Quickstart: Building and Running the Android App
 
-**Date**: 2025-10-16
+**Branch**: `spec-002/android-frontend-integration` | **Date**: 2025-10-17
 
-This guide provides the basic steps to set up the development environment and run the teeLedger Android application.
+This guide provides the steps to build and run the teeLedger Android application.
 
 ## Prerequisites
 
-1.  **Android Studio**: Latest stable version.
-2.  **Java Development Kit (JDK)**: Version 17 or higher.
-3.  **Rust Toolchain**: Install via `rustup`.
-4.  **cargo-ndk**: Install via `cargo install cargo-ndk`.
-5.  **Android NDK**: Install via the Android Studio SDK Manager.
+- [Android Studio](https://developer.android.com/studio) (latest stable version)
+- An Android Virtual Device (AVD) configured in Android Studio, or a physical Android device (API 24+).
 
-## Build and Run
+## Build & Run Instructions
 
-1.  **Clone the repository**.
-2.  **Open the project in Android Studio**.
-3.  **Configure Gradle**: The `app/build.gradle.kts` file is configured to execute a `cargo-ndk` build task before the main application build. This will compile the Rust core library (`libledgercore`) for all target Android ABIs.
-4.  **Sync Gradle**: Let Android Studio download all dependencies.
-5.  **Run the app**: Select an emulator or connect a physical device and click the 'Run' button in Android Studio. The Gradle script will handle the entire build process automatically.
+1.  **Open the Project**:
+    -   Launch Android Studio.
+    -   Select "Open" or "Open an Existing Project".
+    -   Navigate to and select the `android/` directory within this repository.
 
-## Project Structure
+2.  **Sync Gradle**:
+    -   Android Studio will automatically detect the Gradle project and prompt you to sync. This will download all the required dependencies, including SQLCipher.
+    -   Wait for the Gradle sync to complete successfully.
 
-- The Android application code is located in `app/`.
-- The Rust core library code is located in `src/` (at the repository root).
-- The compiled `.so` files from the Rust library are automatically placed in `app/src/main/jniLibs/` by the build script.
+3.  **Run the App**:
+    -   Select a run configuration (usually the `app` module is pre-selected).
+    -   Choose your target device (either a running emulator or a connected physical device).
+    -   Click the "Run" button (the green play icon).
+
+## Expected Outcome
+
+The application will build, install, and launch on the selected device. The main screen of the application will be displayed.

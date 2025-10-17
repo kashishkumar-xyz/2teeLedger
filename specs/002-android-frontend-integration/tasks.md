@@ -1,110 +1,70 @@
-# Tasks: Android UI for teeLedger
+# Feature Tasks: Android UI for teeLedger
 
-**Input**: Design documents from `/specs/002-android-frontend-integration/`
+**Branch**: `spec-002/android-frontend-integration` | **Date**: 2025-10-17 | **Spec**: `specs/002-android-frontend-integration/spec.md`
 
-## Phase 1: Setup (Shared Infrastructure)
+This document outlines the implementation tasks for the teeLedger Android application based on the revised, standalone architecture.
 
-**Purpose**: Project initialization and basic structure
+## Phase 1: Project Setup & Structure
 
-- [X] T001 Create the Android project structure in the `app/` directory.
-- [X] T002 Configure `app/build.gradle.kts` to execute a `cargo-ndk` build, compiling the Rust core library for all target Android ABIs.
+*Initial project scaffolding and directory creation.*
 
----
+- [ ] T001 Verify the base Android project can be built successfully in the `android/` directory.
+- [ ] T002 Create the directory structure for the application source code: `android/app/src/main/java/com/example/ledger/{model,db,ui,viewmodel}`.
 
-## Phase 2: Foundational (Blocking Prerequisites)
+## Phase 2: Foundational - Database Layer
 
-**Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented
+*Build the secure, encrypted database foundation using Room and SQLCipher. This phase is critical for security and stability.*
 
-- [X] T003 Implement the JNI bridge in `app/src/main/java/com/example/teeledger/jni/LedgerCore.kt` to connect to the Rust FFI functions.
-- [X] T004 Implement secure key management to retrieve the encryption key from the Android Keystore and pass it to the JNI bridge.
-- [X] T005 [P] Create the Kotlin data class `BalanceSummary` in `app/src/main/java/com/example/teeledger/models/BalanceSummary.kt`.
-- [X] T006 [P] Create the Kotlin data class `TransactionDetails` in `app/src/main/java/com/example/teeledger/models/TransactionDetails.kt`.
+- [ ] T003 Define the `Transaction` data class as a Room entity in `android/app/src/main/java/com/example/ledger/model/Transaction.kt`.
+- [ ] T004 Create the `TransactionDao` interface with methods for `insert`, `getAll`, and `getByPerson` in `android/app/src/main/java/com/example/ledger/db/TransactionDao.kt`.
+- [ ] T005 Create the `AppDatabase` abstract class, inheriting from `RoomDatabase`, in `android/app/src/main/java/com/example/ledger/db/AppDatabase.kt`.
+- [ ] T006 Implement the SQLCipher `SupportOpenHelperFactory` when building the Room database instance to enable encryption. This should be handled within a database provider object or companion object in `AppDatabase.kt`.
+- [ ] T007 Create a `LedgerRepository` class that takes the `TransactionDao` as a dependency to abstract all data operations from the ViewModels, in `android/app/src/main/java/com/example/ledger/db/LedgerRepository.kt`.
 
-**Checkpoint**: Foundation ready - user story implementation can now begin.
+## Phase 3: User Story 1 - View Balances
 
----
+*Goal: As a user, I want to open the app and immediately see a summary of how much each person owes me or I owe them.*
 
-## Phase 3: User Story 1 - View Balances (Priority: P1) 🎯 MVP
+- [ ] T008 [US1] Create a `Balance` data class to hold aggregated summary data (`person_name`, `net_balance`) in `android/app/src/main/java/com/example/ledger/model/Balance.kt`.
+- [ ] T009 [US1] Implement a method in `LedgerRepository` to query all transactions and compute a `List<Balance>`.
+- [ ] T010 [US1] Create a `BalanceViewModel` that uses the `LedgerRepository` to fetch the list of balances via a public `StateFlow` in `android/app/src/main/java/com/example/ledger/viewmodel/BalanceViewModel.kt`.
+- [ ] T011 [P] [US1] Create a `BalanceListItem` Composable to display a single person's name and balance in `android/app/src/main/java/com/example/ledger/ui/BalanceScreen.kt`.
+- [ ] T012 [US1] Create the main `BalanceScreen` Composable that observes the `BalanceViewModel` and displays a `LazyColumn` of `BalanceListItem` Composables.
+- [ ] T013 [US1] Update `MainActivity.kt` to display the `BalanceScreen` and provide it with the `BalanceViewModel`.
 
-**Goal**: As a user, I want to open the app and immediately see a summary of how much each person owes me or I owe them.
+## Phase 4: User Story 2 - Add a New Transaction
 
-**Independent Test**: A user can open the application and see a list of all people with their current aggregated balances.
+*Goal: As a user, I want to easily add a new financial transaction from the main screen.*
 
-### Tests for User Story 1
-- [X] T007 [US1] Write a failing unit test for `LedgerViewModel` in `app/src/test/java/com/example/teeledger/viewmodel/LedgerViewModelTest.kt` that verifies the correct fetching of balances.
+- [ ] T014 [P] [US2] Create an `AddTransactionScreen` Composable containing `TextField`s for person, amount, and an optional note, along with a 'Save' button, in `android/app/src/main/java/com/example/ledger/ui/AddTransactionScreen.kt`.
+- [ ] T015 [US2] Add a `saveTransaction` method to the `LedgerRepository` and `BalanceViewModel`.
+- [ ] T016 [US2] Add a Floating Action Button to the `BalanceScreen` to navigate to the `AddTransactionScreen`.
+- [ ] T017 [US2] Implement the save logic in the `BalanceViewModel` to be called from the `AddTransactionScreen`, persisting the new transaction and navigating back.
 
-### Implementation for User Story 1
+## Phase 5: User Story 3 - View Transaction History
 
-- [X] T008 [US1] Implement `LedgerViewModel` in `app/src/main/java/com/example/teeledger/viewmodel/LedgerViewModel.kt` to fetch balances via the JNI bridge.
-- [X] T009 [US1] Create the UI for the main balance screen in `app/src/main/res/layout/activity_main.xml`.
-- [X] T010 [US1] Implement `MainActivity.kt` in `app/src/main/java/com/example/teeledger/MainActivity.kt` to display the list of balances using the ViewModel.
+*Goal: As a user, I want to tap on a person's name in the balance list to see a detailed history of all our transactions.*
 
-**Checkpoint**: User Story 1 should be fully functional and testable independently.
-
----
-
-## Phase 4: User Story 2 - Add a New Transaction (Priority: P1)
-
-**Goal**: As a user, I want to easily add a new financial transaction from the main screen.
-
-**Independent Test**: A user can navigate from the main screen, fill out a form, and successfully add a new transaction, which then updates the balances on the main screen.
-
-### Tests for User Story 2
-- [X] T011 [US2] Write a failing unit test for `AddTransactionViewModel` in `app/src/test/java/com/example/teeledger/viewmodel/AddTransactionViewModelTest.kt` covering input validation and transaction submission.
-
-### Implementation for User Story 2
-
-- [X] T012 [US2] Implement input validation logic within `AddTransactionViewModel` as per `spec.md:FR-004`.
-- [X] T013 [US2] Implement `AddTransactionViewModel` in `app/src/main/java/com/example/teeledger/viewmodel/AddTransactionViewModel.kt`.
-- [X] T014 [US2] Create the UI for the "add transaction" screen in `app/src/main/res/layout/activity_add_transaction.xml`.
-- [X] T015 [US2] Implement `AddTransactionActivity.kt` in `app/src/main/java/com/example/teeledger/AddTransactionActivity.kt` to handle user input and call the ViewModel.
-- [X] T016 [US2] Add navigation from `MainActivity` to `AddTransactionActivity`.
-
-**Checkpoint**: User Stories 1 AND 2 should both work.
-
----
-
-## Phase 5: User Story 3 - View Transaction History (Priority: P2)
-
-**Goal**: As a user, I want to tap on a person's name in the balance list to see a detailed history of all our transactions.
-
-**Independent Test**: A user can select a person from the main screen and view a new screen listing all transactions associated with that person.
-
-### Tests for User Story 3
-- [X] T017 [US3] Write a failing unit test for `TransactionHistoryViewModel` in `app/src/test/java/com/example/teeledger/viewmodel/TransactionHistoryViewModelTest.kt`.
-
-### Implementation for User Story 3
-
-- [X] T018 [US3] Implement `TransactionHistoryViewModel` in `app/src/main/java/com/example/teeledger/viewmodel/TransactionHistoryViewModel.kt`.
-- [X] T019 [US3] Create the UI for the transaction history screen in `app/src/main/res/layout/activity_transaction_history.xml`.
-- [X] T020 [US3] Implement `TransactionHistoryActivity.kt` in `app/src/main/java/com/example/teeledger/TransactionHistoryActivity.kt` to display the transaction list.
-- [X] T021 [US3] Add navigation from `MainActivity` to `TransactionHistoryActivity`.
-
-**Checkpoint**: All user stories should now be functional.
-
----
+- [ ] T018 [P] [US3] Create a `TransactionHistoryScreen` Composable that displays a `LazyColumn` of `Transaction` items in `android/app/src/main/java/com/example/ledger/ui/TransactionHistoryScreen.kt`.
+- [ ] T019 [US3] Create a `TransactionHistoryViewModel` that can fetch all transactions for a specific person from the `LedgerRepository` in `android/app/src/main/java/com/example/ledger/viewmodel/TransactionHistoryViewModel.kt`.
+- [ ] T020 [US3] Implement navigation from the `BalanceScreen` to the `TransactionHistoryScreen`, passing the selected person's name when an item is tapped.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-**Purpose**: Improvements that affect multiple user stories.
+*Final polish and non-functional requirements.*
 
-- [X] T022 [P] Implement loading indicators for all screens that perform background operations.
-- [X] T023 [P] Implement UI to display errors from the FFI layer. The UI should show a user-friendly message with an option to view the detailed technical error message, per `spec.md:FR-007`.
-- [X] T024 [P] Add Espresso UI tests for the main user flows (Add Transaction, View History).
-- [X] T025 [P] Add performance tests to measure application launch time and ensure it meets `spec.md:NFR-002`.
+- [ ] T021 Implement loading indicators in the UI for asynchronous data operations.
+- [ ] T022 Implement user-friendly error handling for input validation and database errors.
+- [ ] T023 Write unit tests for the ViewModels and the `LedgerRepository`.
 
 ---
 
-## Dependencies & Execution Order
+## Dependencies
 
-- **Setup (Phase 1)** and **Foundational (Phase 2)** must be completed before any user stories.
-- Within each user story phase, tests must be written and fail before implementation begins.
-- User stories can be implemented in priority order (US1, US2, US3).
+- **US1** is foundational.
+- **US2** depends on **US1** (for the main screen).
+- **US3** depends on **US1** (for the main screen).
 
 ## Implementation Strategy
 
-### MVP First (User Story 1 Only)
-
-1. Complete Phase 1 & 2.
-2. Complete Phase 3 (User Story 1), following the test-first approach.
-3. **STOP and VALIDATE**: Test User Story 1 independently.
+The strategy is to build a fully functional, standalone Android application first. The foundational database layer (Phase 2) is the highest priority. After that, user stories can be implemented. FFI integration with the Rust backend can be added in a later version, ensuring the core Android app is stable and secure on its own.

@@ -66,15 +66,15 @@ As a user, I want to tap on a person's name in the balance list to see a detaile
 - **FR-002**: The system MUST provide a primary action button (e.g., a Floating Action Button) on the main screen to initiate the creation of a new transaction.
 - **FR-003**: The system MUST provide a form to input the details of a new transaction, including the person's name (text), the amount (numeric), and an optional note (text).
 - **FR-004**: The system MUST validate user input on the transaction form before attempting to save it.
-- **FR-005**: The system MUST securely manage and provide the necessary encryption key to the backend library for database operations.
+- **FR-005**: The system MUST securely manage the encryption key and use it to configure the local SQLCipher database.
 - **FR-006**: The system MUST allow navigation from the main balance list to a detailed transaction history screen for a selected person.
-- **FR-007**: The UI MUST gracefully handle and display errors returned from the backend library. When an error occurs, the detailed, technical error message from the library MUST be displayed to the user.
+- **FR-007**: The UI MUST gracefully handle and display errors (e.g., validation errors, database errors) to the user in a clear, human-readable format.
 
 ### Non-Functional Requirements
 
 - **NFR-001**: The application UI SHOULD adhere to Material Design principles for a modern, intuitive, and platform-consistent user experience.
 - **NFR-002**: The application MUST launch and display the main balance screen within 2 seconds on a mid-range device.
-- **NFR-003**: The application's build process MUST be automated to include the compilation of the Rust core library and its inclusion in the final application package.
+- **NFR-003**: The application MUST be buildable as a standalone project using standard Gradle commands.
 
 ### Key Entities
 

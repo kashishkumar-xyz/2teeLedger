@@ -1,28 +1,35 @@
-# Research Findings: Android UI Development
+# Research: Android Standalone Application
 
-**Date**: 2025-10-16
+**Branch**: `spec-002/android-frontend-integration` | **Date**: 2025-10-17
 
-## 1. JNI/JNA Integration with Rust
+This document records the key technical decisions for the teeLedger Android application, focusing on a stable, secure, and maintainable architecture.
 
-**Decision**: Use the **Java Native Access (JNA)** library for the JNI bridge instead of manual JNI boilerplate.
+---
 
-**Rationale**:
-- **Simplicity**: JNA significantly reduces the amount of boilerplate code required on the Kotlin/Java side. Instead of writing C-style JNI function declarations, we can define a simple Kotlin interface that maps directly to the Rust library's exported functions.
-- **Maintainability**: This approach is cleaner and less error-prone. It makes the boundary between Kotlin and Rust easier to understand and manage.
-- **Type Safety**: JNA provides better type mapping for common primitives and structs.
+## 1. Persistence and Encryption
 
-**Alternatives considered**:
-- **Manual JNI**: Requires writing significant C/C++ glue code and using `external fun` declarations in Kotlin. This is complex, error-prone, and time-consuming.
-- **JNIgen/other tools**: These tools can auto-generate bindings, but JNA provides a more direct and lightweight integration for this project's needs.
-
-## 2. Secure Key Management at JNI Boundary
-
-**Decision**: The Android app will retrieve the database encryption key from the Android Keystore. The raw key bytes will be passed to the Rust library's initialization function as a `ByteArray`. The Rust library will be responsible for zeroing the key from its memory after use.
+**Decision**: Use **AndroidX Room** with **SQLCipher for Android** for the persistence layer.
 
 **Rationale**:
-- **Security**: The key's lifecycle in Android memory is minimized. It is retrieved from the secure hardware-backed Keystore and immediately passed over the JNI boundary.
-- **Clear Responsibility**: The Android layer is responsible for platform-specific secure storage (Keystore), and the Rust layer is responsible for its own internal memory security (`zeroize`). This aligns with the Security-First principle.
+- **Stability & Maintainability**: Room is the Google-recommended standard for persistence on Android. It provides a robust, type-safe abstraction over SQLite, reducing boilerplate and catching SQL errors at compile time.
+- **Security**: By using the official `net.zetetic:sqlcipher-android` library via its `SupportOpenHelperFactory`, we can seamlessly integrate FIPS 140-2 validated, 256-bit AES encryption into Room. This meets our security-first principle without requiring custom build logic.
+- **Developer Experience**: Room and its Kotlin Coroutines integration (`Flow`) simplify data access and observation, making it easy to build a reactive UI.
 
-**Alternatives considered**:
-- **Storing the key in a global static variable**: Highly insecure and violates the project's core principles.
-- **Passing the key via file**: Introduces unnecessary I/O and increases the attack surface.
+**Alternatives Considered**:
+- **Direct SQLite with JNI Bridge**: The original approach. This was abandoned due to extreme build complexity, brittleness, and the difficulty of debugging native code. It coupled the Android app too tightly to the Rust backend.
+- **Realm / other mobile databases**: While viable, Room is the standard component within the Jetpack suite and integrates most cleanly with other AndroidX libraries like ViewModel and Compose.
+
+---
+
+## 2. Application Architecture
+
+**Decision**: Use the **Model-View-ViewModel (MVVM)** architecture with Jetpack Compose.
+
+**Rationale**:
+- **Lifecycle-Awareness**: ViewModels are designed to store and manage UI-related data in a lifecycle-conscious way, surviving configuration changes (like screen rotations) that would otherwise destroy the data.
+- **Separation of Concerns**: MVVM creates a clear separation between the UI (the View, our Composables), the business logic/state holder (ViewModel), and the data source (the Repository/Room database). This makes the app easier to test, debug, and maintain.
+- **Compose Integration**: Jetpack Compose is designed to work reactively with state. Using ViewModels with `StateFlow` provides a clean, efficient, and idiomatic way to connect our UI to the underlying data layer.
+
+**Alternatives Considered**:
+- **Model-View-Presenter (MVP)**: An older pattern that is less suited to the declarative and state-driven nature of Jetpack Compose.
+- **No Architecture (Activity/Fragment-based logic)**: Placing all logic in the UI layer leads to tightly-coupled, untestable code that is difficult to maintain.
