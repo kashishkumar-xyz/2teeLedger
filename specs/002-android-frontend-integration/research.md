@@ -2,17 +2,18 @@
 
 **Date**: 2025-10-16
 
-## 1. JNI Integration with Rust
+## 1. JNI/JNA Integration with Rust
 
-**Decision**: Use a **standard JNI bridge** to the existing C-style FFI functions exposed by the Rust library.
+**Decision**: Use the **Java Native Access (JNA)** library for the JNI bridge instead of manual JNI boilerplate.
 
 **Rationale**:
-- **Existing Implementation**: The codebase already contains a complete and tested C-style FFI layer (`ledger/src/ffi.rs`). This provides a stable and predictable foundation for the Android integration.
-- **Robustness**: A direct JNI-to-C-FFI integration is a standard, well-understood, and highly robust pattern for connecting Android to native Rust code. It avoids introducing additional third-party dependencies like JNA.
-- **Performance**: This direct approach offers the best possible performance, as there is no intermediate abstraction layer between the JVM and the native code.
+- **Simplicity**: JNA significantly reduces the amount of boilerplate code required on the Kotlin/Java side. Instead of writing C-style JNI function declarations, we can define a simple Kotlin interface that maps directly to the Rust library's exported functions.
+- **Maintainability**: This approach is cleaner and less error-prone. It makes the boundary between Kotlin and Rust easier to understand and manage.
+- **Type Safety**: JNA provides better type mapping for common primitives and structs.
 
 **Alternatives considered**:
-- **JNA (Java Native Access)**: While JNA can reduce boilerplate for simple cases, it was deemed an unnecessary abstraction given that a comprehensive C-style FFI was already in place. Sticking to the existing FFI reduces dependencies and potential points of failure.
+- **Manual JNI**: Requires writing significant C/C++ glue code and using `external fun` declarations in Kotlin. This is complex, error-prone, and time-consuming.
+- **JNIgen/other tools**: These tools can auto-generate bindings, but JNA provides a more direct and lightweight integration for this project's needs.
 
 ## 2. Secure Key Management at JNI Boundary
 

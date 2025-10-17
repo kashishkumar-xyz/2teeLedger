@@ -7,6 +7,3 @@ data/
 .notes/
 *.log
 .env*
-node_modules/
-Dockerfile*
-coverage/

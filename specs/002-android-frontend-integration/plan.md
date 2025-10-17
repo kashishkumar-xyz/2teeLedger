@@ -9,15 +9,15 @@ This plan outlines the development of the Android UI for the teeLedger applicati
 ## Technical Context
 
 **Language/Version**: Kotlin 1.9+
-**Primary Dependencies**: AndroidX (AppCompat, Core KTX, ViewModel, LiveData), Google Material Components, Coroutines.
+**Primary Dependencies**: AndroidX (AppCompat, Core KTX, ViewModel, LiveData), Google Material Components, Coroutines, JNA (for simpler JNI mapping).
 **Storage**: The UI layer does not manage storage directly; it interacts with the Rust core library which handles the encrypted SQLite database.
 **Testing**: JUnit 5, Espresso, Mockito.
 **Target Platform**: Android API Level 26+ (Oreo).
 **Project Type**: Android Application (APK).
 **Performance Goals**: App launch to interactive < 2 seconds; transaction submission feedback < 500ms.
-**Constraints**: Must integrate with the pre-existing Rust core library (`libledgercore.so`) via its C-style FFI. All business logic and data storage is delegated to the Rust core.
+**Constraints**: Must integrate with the pre-existing Rust core library (`libledgercore.so`) via a JNI bridge. All business logic and data storage is delegated to the Rust core.
 **Research Topics**:
-- Best practices for building a JNI bridge to the existing C-style Rust FFI.
+- Best practices for modern Android JNI/JNA integration with a Rust library.
 - Securely managing the lifecycle of the database key between the Android Keystore and the JNI boundary.
 
 ## Constitution Check

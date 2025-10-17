@@ -1,44 +1,47 @@
-# FFI Contract: Android to Rust Core
+# FFI Contract: UI to Rust Core
 
-**Date**: 2025-10-17
+**Date**: 2025-10-16
 
-This document defines the functional contract between the Android UI (Kotlin) and the Rust core library (`libledgercore.so`) via the JNI. The UI will interact with the Rust library by declaring `external fun` functions that correspond to the C-style FFI functions exported by the Rust library.
+This document defines the functional contract between the Android UI (Kotlin) and the Rust core library (`libledgercore.so`) via the JNI/JNA bridge.
 
-## FFI Function Signatures
+The UI will interact with the Rust library through an interface with the following methods.
 
-The following C-style functions are exported from the Rust library and must be matched by the Kotlin `external fun` declarations. All string parameters and return values are UTF-8 encoded C strings (`*const c_char`).
+## LedgerCore Interface
 
-```c
-// Initializes the database. Returns a C string (success or error message).
-const char* init_db(const char* db_path, const char* encryption_key);
+```kotlin
+// Assumed to be a JNA interface definition
+interface LedgerCore : Library {
 
-// Opens the database. Returns a C string (success or error message).
-const char* open_db(const char* db_path, const char* encryption_key);
+    /**
+     * Initializes the database with the provided encryption key.
+     * Must be called before any other function.
+     */
+    fun init_db(key: ByteArray): String? // Returns null on success, error string on failure
 
-// Adds a transaction. Returns a C string (success or error message).
-const char* add_transaction(const char* db_path, const char* encryption_key, const char* person, int64_t amount, const char* date, const char* note);
+    /**
+     * Retrieves a list of all balance summaries.
+     * Returns a JSON string representing a list of BalanceSummary objects.
+     */
+    fun get_balances(): String // JSON: Result<List<BalanceSummary>, String>
 
-// Lists all transactions. Returns a JSON string or an error message.
-const char* list_transactions(const char* db_path, const char* encryption_key, const char* person, const char* since_date, int32_t limit);
+    /**
+     * Retrieves the transaction history for a specific person.
+     * Returns a JSON string representing a list of TransactionDetails objects.
+     */
+    fun get_transaction_history(personName: String): String // JSON: Result<List<TransactionDetails>, String>
 
-// Lists all balances. Returns a JSON string or an error message.
-const char* list_balances(const char* db_path, const char* encryption_key);
-
-// Gets the balance for a specific person. Returns the balance as a string or an error message.
-const char* get_balance(const char* db_path, const char* encryption_key, const char* person);
-
-// Backs up the database. Returns a C string (success or error message).
-const char* backup_db(const char* db_path, const char* backup_path);
-
-// Restores the database. Returns a C string (success or error message).
-const char* restore_db(const char* backup_path, const char* db_path);
+    /**
+     * Adds a new transaction to the ledger.
+     * Returns null on success, error string on failure.
+     */
+    fun add_transaction(personName: String, amount: Long, note: String?): String?
+}
 ```
 
-## Data Transfer Objects (DTOs) via JSON
+**Data Transfer Objects (DTOs) via JSON:**
 
-For functions that return lists of objects (`list_transactions`, `list_balances`), the returned C string is a JSON payload. The Android application is responsible for parsing this JSON.
+To simplify the FFI boundary, complex objects will be serialized to JSON strings.
 
-- **`BalanceSummary`**: `{"person": "John Doe", "balance": 1500}`
-- **`Transaction`**: `{"id": 1, "person": "Jane Doe", "amount": -500, "date": "2025-10-17", "note": "Lunch"}`
-
-**Note on Memory Management**: The C strings returned by the FFI functions are allocated by the Rust library. The Android/JNI side is responsible for freeing these strings after use to prevent memory leaks.
+- **`BalanceSummary`**: `{"person_name": "John Doe", "net_balance": 1500}`
+- **`TransactionDetails`**: `{"id": "tx123", "date": "2025-10-16", "amount": 500, "note": "Lunch"}`
+- **`Result<T, E>`**: A standard Rust-style result, e.g., `{"Ok": [...]}` or `{"Err": "Database is locked"}`.
