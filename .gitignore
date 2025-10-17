@@ -46,3 +46,6 @@ Thumbs.db
 *.jar
 .gradle/
 build/
+
+deps/*
+deps/sqlcipher-android
