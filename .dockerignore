@@ -1,9 +1,0 @@
-.git
-.gitignore
-.dockerignore
-target/
-cli/target/
-data/
-.notes/
-*.log
-.env*
