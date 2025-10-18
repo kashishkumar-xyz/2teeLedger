@@ -35,7 +35,7 @@ These commands will produce `libledger.so` files in the correct `jniLibs` direct
 ## Step 2: Build and Run the Android Application
 
 1.  Open the `android` directory in Android Studio.
-2.  Android Studio should automatically sync the Gradle project.
+2.  Android Studio will automatically handle the Gradle project sync, dependency resolution, and other build complexities.
 3.  Ensure you have a connected device or a running emulator.
 4.  Build and run the application using the standard "Run 'app'" command (Shift+F10).
 
