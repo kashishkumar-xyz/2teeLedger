@@ -18,12 +18,19 @@ attr shortcutMatchRequired
 attr ttcIndex
 color androidx_core_ripple_material_light
 color androidx_core_secondary_text_default_material_light
+color black
 color call_notification_answer_color
 color call_notification_decline_color
 color notification_action_color_filter
 color notification_icon_bg_color
+color purple_200
+color purple_500
+color purple_700
+color teal_200
+color teal_700
 color vector_tint_color
 color vector_tint_theme_color
+color white
 dimen compat_button_inset_horizontal_material
 dimen compat_button_inset_vertical_material
 dimen compat_button_padding_horizontal_material
@@ -52,6 +59,8 @@ drawable ic_call_answer_video
 drawable ic_call_answer_video_low
 drawable ic_call_decline
 drawable ic_call_decline_low
+drawable ic_launcher_background
+drawable ic_launcher_foreground
 drawable notification_action_background
 drawable notification_bg
 drawable notification_bg_low
@@ -162,6 +171,8 @@ layout notification_template_custom_big
 layout notification_template_icon_group
 layout notification_template_part_chronometer
 layout notification_template_part_time
+mipmap ic_launcher
+mipmap ic_launcher_round
 string androidx_startup
 string app_name
 string bottom_sheet_collapse_description
@@ -253,6 +264,7 @@ style TextAppearance_Compat_Notification_Info
 style TextAppearance_Compat_Notification_Line2
 style TextAppearance_Compat_Notification_Time
 style TextAppearance_Compat_Notification_Title
+style Theme_Ledger
 style Widget_Compat_NotificationActionContainer
 style Widget_Compat_NotificationActionText
 styleable Capability queryPatterns shortcutMatchRequired
@@ -261,3 +273,5 @@ styleable FontFamily fontProviderAuthority fontProviderCerts fontProviderFetchSt
 styleable FontFamilyFont android_font android_fontWeight android_fontStyle android_ttcIndex android_fontVariationSettings font fontStyle fontVariationSettings fontWeight ttcIndex
 styleable GradientColor android_startColor android_endColor android_type android_centerX android_centerY android_gradientRadius android_tileMode android_centerColor android_startX android_startY android_endX android_endY
 styleable GradientColorItem android_color android_offset
+xml backup_rules
+xml data_extraction_rules

@@ -1,31 +1,27 @@
-# Data Models: teeLedger UI
+# Data Model: Android UI
 
-**Date**: 2025-10-16
-**Source Spec**: /home/kaz/Dev/rust/_current/2teeLedger/specs/002-android-frontend-integration/spec.md
+**Date**: 2025-10-18
 
-This document defines the data models (view models) used by the Android UI. These are distinct from the core data structures within the Rust library.
+## Source of Truth
 
-## 1. BalanceSummary
+The single source of truth for the application's data model is the Rust core library. The Android UI does not define its own data structures for business objects; instead, it uses data structures that are directly mapped from the Rust FFI layer.
 
-Represents the financial standing with a single person, intended for display on the main screen.
+Refer to the Rust data model defined in `ledger/src/models.rs` for the canonical definition of entities like `Transaction`.
 
-**Fields**:
-- `person_name`: `String` - The name of the other party.
-- `net_balance`: `Long` - The aggregated net balance. Positive if they owe the user, negative if the user owes them.
+## FFI Data Structures
 
-**Validation Rules**:
-- `person_name` must not be empty.
+The Android application will interact with FFI-safe versions of the Rust structs. These structs are defined in `ledger/src/ffi.rs` and are exposed to the UI via the JNA interface.
 
-## 2. TransactionDetails
+The primary data structures exposed to the UI will be:
 
-Represents a single financial event for display in a transaction history list.
+- **`BalanceSummary`**: Represents the financial standing with a person.
+  - `person_name`: `String`
+  - `net_balance`: `f64`
 
-**Fields**:
-- `id`: `String` - A unique identifier for the transaction.
-- `date`: `String` - The date of the transaction (ISO 8601 format).
-- `amount`: `Long` - The transaction amount.
-- `note`: `String?` - An optional description of the transaction.
+- **`TransactionDetails`**: Represents a single financial event.
+  - `person_name`: `String`
+  - `amount`: `f64`
+  - `date`: `i64` (Unix timestamp)
+  - `note`: `Option<String>`
 
-**Validation Rules**:
-- `id` must not be empty.
-- `amount` must not be zero.
+These structs will have corresponding `Structure` classes in the JNA interface on the Android side. The `LedgerRepository.kt` will be responsible for converting these FFI structures into Kotlin data classes that the ViewModel and UI can easily consume.

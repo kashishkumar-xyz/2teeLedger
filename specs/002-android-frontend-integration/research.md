@@ -1,35 +1,45 @@
-# Research: Android Standalone Application
+# Research: Android FFI Integration
 
-**Branch**: `spec-002/android-frontend-integration` | **Date**: 2025-10-17
+**Date**: 2025-10-18
 
-This document records the key technical decisions for the teeLedger Android application, focusing on a stable, secure, and maintainable architecture.
+This document outlines the key research areas required to successfully integrate the teeLedger Rust core with the Android frontend using a Foreign Function Interface (FFI).
 
----
+## Research Tasks
 
-## 1. Persistence and Encryption
+### 1. Rust FFI Best Practices
 
-**Decision**: Use **AndroidX Room** with **SQLCipher for Android** for the persistence layer.
+- **Task**: Investigate and document best practices for creating a C-compatible FFI layer in Rust.
+- **Questions to Answer**:
+    - How should Rust structs be represented to be C-compatible (`#[repr(C)]`)?
+    - How are strings (`CString`, `CStr`) safely passed and returned between Rust and C?
+    - How should memory be managed? Who is responsible for freeing memory (e.g., for strings or structs returned from Rust)?
+    - What is the standard way to handle and propagate errors across the FFI boundary (e.g., error codes, special return values)?
+- **Resources**: The Rust FFI Omnibus, The Rustonomicon.
 
-**Rationale**:
-- **Stability & Maintainability**: Room is the Google-recommended standard for persistence on Android. It provides a robust, type-safe abstraction over SQLite, reducing boilerplate and catching SQL errors at compile time.
-- **Security**: By using the official `net.zetetic:sqlcipher-android` library via its `SupportOpenHelperFactory`, we can seamlessly integrate FIPS 140-2 validated, 256-bit AES encryption into Room. This meets our security-first principle without requiring custom build logic.
-- **Developer Experience**: Room and its Kotlin Coroutines integration (`Flow`) simplify data access and observation, making it easy to build a reactive UI.
+### 2. JNA on Android
 
-**Alternatives Considered**:
-- **Direct SQLite with JNI Bridge**: The original approach. This was abandoned due to extreme build complexity, brittleness, and the difficulty of debugging native code. It coupled the Android app too tightly to the Rust backend.
-- **Realm / other mobile databases**: While viable, Room is the standard component within the Jetpack suite and integrates most cleanly with other AndroidX libraries like ViewModel and Compose.
+- **Task**: Determine the feasibility and best practices for using JNA (Java Native Access) to call the Rust shared library (`.so`) from the Android application.
+- **Questions to Answer**:
+    - How is the JNA dependency added to a Gradle project?
+    - How is the native `.so` library loaded on different Android architectures (ARM, x86)?
+    - How is a JNA interface defined in Java/Kotlin to map to the Rust FFI functions?
+    - What are the performance implications of using JNA on Android compared to JNI?
+- **Alternatives**: JNI (Java Native Interface). JNA is preferred for its simplicity if performance is acceptable.
 
----
+### 3. Data Type Mapping
 
-## 2. Application Architecture
+- **Task**: Create a clear mapping of data types between Rust, the C FFI layer, and Kotlin/Java.
+- **Questions to Answer**:
+    - How do primitive types (e.g., `i32`, `f64`, `bool`) map between Rust and Java?
+    - How are complex data structures (structs) mapped? This involves creating corresponding `Structure` classes in JNA.
+    - How will lists or arrays of structs be passed from Rust to Kotlin?
+- **Output**: A mapping table in `contracts/ffi_ui_bindings.md`.
 
-**Decision**: Use the **Model-View-ViewModel (MVVM)** architecture with Jetpack Compose.
+### 4. Error Handling Strategy
 
-**Rationale**:
-- **Lifecycle-Awareness**: ViewModels are designed to store and manage UI-related data in a lifecycle-conscious way, surviving configuration changes (like screen rotations) that would otherwise destroy the data.
-- **Separation of Concerns**: MVVM creates a clear separation between the UI (the View, our Composables), the business logic/state holder (ViewModel), and the data source (the Repository/Room database). This makes the app easier to test, debug, and maintain.
-- **Compose Integration**: Jetpack Compose is designed to work reactively with state. Using ViewModels with `StateFlow` provides a clean, efficient, and idiomatic way to connect our UI to the underlying data layer.
-
-**Alternatives Considered**:
-- **Model-View-Presenter (MVP)**: An older pattern that is less suited to the declarative and state-driven nature of Jetpack Compose.
-- **No Architecture (Activity/Fragment-based logic)**: Placing all logic in the UI layer leads to tightly-coupled, untestable code that is difficult to maintain.
+- **Task**: Design a robust error handling strategy for operations that cross the FFI boundary.
+- **Questions to Answer**:
+    - Should Rust return integer error codes or a status enum?
+    - How can the Android app retrieve detailed error messages from Rust without causing memory leaks?
+    - How will these FFI errors be translated into user-friendly exceptions or states in the Android ViewModel?
+- **Output**: A section in `contracts/ffi_ui_bindings.md` detailing the error handling contract.

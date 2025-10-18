@@ -20,6 +20,7 @@ This document outlines the implementation tasks for the teeLedger Android applic
 - [ ] T005 Create the `AppDatabase` abstract class, inheriting from `RoomDatabase`, in `android/app/src/main/java/com/example/ledger/db/AppDatabase.kt`.
 - [ ] T006 Implement the SQLCipher `SupportOpenHelperFactory` when building the Room database instance to enable encryption. This should be handled within a database provider object or companion object in `AppDatabase.kt`.
 - [ ] T007 Create a `LedgerRepository` class that takes the `TransactionDao` as a dependency to abstract all data operations from the ViewModels, in `android/app/src/main/java/com/example/ledger/db/LedgerRepository.kt`.
+- [ ] T007.1 [P] [TEST] Write unit tests for Room entities, DAOs, and database setup.
 
 ## Phase 3: User Story 1 - View Balances
 
@@ -28,6 +29,7 @@ This document outlines the implementation tasks for the teeLedger Android applic
 - [ ] T008 [US1] Create a `Balance` data class to hold aggregated summary data (`person_name`, `net_balance`) in `android/app/src/main/java/com/example/ledger/model/Balance.kt`.
 - [ ] T009 [US1] Implement a method in `LedgerRepository` to query all transactions and compute a `List<Balance>`.
 - [ ] T010 [US1] Create a `BalanceViewModel` that uses the `LedgerRepository` to fetch the list of balances via a public `StateFlow` in `android/app/src/main/java/com/example/ledger/viewmodel/BalanceViewModel.kt`.
+- [ ] T010.1 [P] [TEST] Write unit tests for BalanceViewModel and LedgerRepository's balance calculation.
 - [ ] T011 [P] [US1] Create a `BalanceListItem` Composable to display a single person's name and balance in `android/app/src/main/java/com/example/ledger/ui/BalanceScreen.kt`.
 - [ ] T012 [US1] Create the main `BalanceScreen` Composable that observes the `BalanceViewModel` and displays a `LazyColumn` of `BalanceListItem` Composables.
 - [ ] T013 [US1] Update `MainActivity.kt` to display the `BalanceScreen` and provide it with the `BalanceViewModel`.
@@ -38,6 +40,7 @@ This document outlines the implementation tasks for the teeLedger Android applic
 
 - [ ] T014 [P] [US2] Create an `AddTransactionScreen` Composable containing `TextField`s for person, amount, and an optional note, along with a 'Save' button, in `android/app/src/main/java/com/example/ledger/ui/AddTransactionScreen.kt`.
 - [ ] T015 [US2] Add a `saveTransaction` method to the `LedgerRepository` and `BalanceViewModel`.
+- [ ] T015.1 [P] [TEST] Write unit tests for saveTransaction logic in LedgerRepository and BalanceViewModel.
 - [ ] T016 [US2] Add a Floating Action Button to the `BalanceScreen` to navigate to the `AddTransactionScreen`.
 - [ ] T017 [US2] Implement the save logic in the `BalanceViewModel` to be called from the `AddTransactionScreen`, persisting the new transaction and navigating back.
 
@@ -47,6 +50,7 @@ This document outlines the implementation tasks for the teeLedger Android applic
 
 - [ ] T018 [P] [US3] Create a `TransactionHistoryScreen` Composable that displays a `LazyColumn` of `Transaction` items in `android/app/src/main/java/com/example/ledger/ui/TransactionHistoryScreen.kt`.
 - [ ] T019 [US3] Create a `TransactionHistoryViewModel` that can fetch all transactions for a specific person from the `LedgerRepository` in `android/app/src/main/java/com/example/ledger/viewmodel/TransactionHistoryViewModel.kt`.
+- [ ] T019.1 [P] [TEST] Write unit tests for TransactionHistoryViewModel and its data fetching logic.
 - [ ] T020 [US3] Implement navigation from the `BalanceScreen` to the `TransactionHistoryScreen`, passing the selected person's name when an item is tapped.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
@@ -54,8 +58,13 @@ This document outlines the implementation tasks for the teeLedger Android applic
 *Final polish and non-functional requirements.*
 
 - [ ] T021 Implement loading indicators in the UI for asynchronous data operations.
+- [ ] T021.1 [NFR] Implement UI handling for Rust library initialization failures (e.g., display an error message and prevent app usage).
 - [ ] T022 Implement user-friendly error handling for input validation and database errors.
-- [ ] T023 Write unit tests for the ViewModels and the `LedgerRepository`.
+- [ ] T023 [TEST] Write integration tests for the 'Add Transaction' workflow (US2).
+- [ ] T024 [TEST] Write integration tests for the 'View Balances' workflow (US1).
+- [ ] T025 [TEST] Write integration tests for the 'View Transaction History' workflow (US3).
+- [ ] T026 [NFR] Implement performance monitoring and testing for the main screen launch time (NFR-002).
+- [ ] T027 [NFR] Configure and run static analysis (e.g., KtLint, Detekt) for the Android codebase.
 
 ---
 

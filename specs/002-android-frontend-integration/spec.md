@@ -73,7 +73,7 @@ As a user, I want to tap on a person's name in the balance list to see a detaile
 ### Non-Functional Requirements
 
 - **NFR-001**: The application UI SHOULD adhere to Material Design principles for a modern, intuitive, and platform-consistent user experience.
-- **NFR-002**: The application MUST launch and display the main balance screen within 2 seconds on a mid-range device.
+- **NFR-002**: The application MUST launch and display the main balance screen within 2 seconds on a mid-range device (e.g., Snapdragon 600 series processor or equivalent, 4GB RAM, Android 10+).
 - **NFR-003**: The application MUST be buildable as a standalone project using standard Gradle commands.
 
 ### Key Entities
