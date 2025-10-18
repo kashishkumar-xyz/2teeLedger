@@ -34,10 +34,10 @@ This document outlines the implementation tasks for the teeLedger Android applic
 
 *Implement secure storage for the database encryption key using the Android Keystore.*
 
-- [ ] T017 [FR-005] Create a `KeyManager` class in `android/app/src/main/java/com/example/ledger/security/` that uses the Android Keystore to securely store and retrieve the database encryption key.
-- [ ] T018 [FR-005] Implement logic in the `MainActivity` or a startup service to use the `KeyManager` to retrieve the key and pass it to the `LedgerRepository` to open the database.
-- [ ] T019 [P] [TEST] Write unit tests for the `KeyManager` class.
-- [ ] T020 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
+- [X] T017 [FR-005] Create a `KeyManager` class in `android/app/src/main/java/com/example/ledger/security/` that uses the Android Keystore to securely store and retrieve the database encryption key.
+- [X] T018 [FR-005] Implement logic in the `MainActivity` or a startup service to use the `KeyManager` to retrieve the key and pass it to the `LedgerRepository` to open the database.
+- [X] T019 [P] [TEST] Write unit tests for the `KeyManager` class.
+- [X] T020 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
 
 ## Phase 4: Foundational - Android FFI Integration
 
