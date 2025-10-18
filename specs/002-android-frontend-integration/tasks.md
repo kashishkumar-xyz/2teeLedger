@@ -47,18 +47,18 @@ This document outlines the implementation tasks for the teeLedger Android applic
 - [X] T022 Create a `LedgerRepository.kt` class in `android/app/src/main/java/com/example/ledger/ffi/` that provides a clean, coroutine-based Kotlin API over the `LedgerApi.java` interface.
 - [X] T023 Implement the logic in `LedgerRepository.kt` to call the Rust functions, handle data type conversions, and manage memory (calling the `free_*` functions).
 - [X] T024 [P] [TEST] Write integration tests for the `LedgerRepository.kt` to ensure data can be passed to and received from the Rust library correctly.
-- [ ] T025 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
+- [X] T025 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
 
 ## Phase 5: User Story 1 - View Balances
 
 *Goal: As a user, I want to open the app and immediately see a summary of how much each person owes me or I owe them.*
 
-- [ ] T026 [US1] Create a `BalanceViewModel.kt` that uses the `LedgerRepository` to fetch the list of balances via a public `StateFlow` in `android/app/src/main/java/com/example/ledger/viewmodel/`.
-- [ ] T027 [P] [TEST] Write unit tests for `BalanceViewModel`.
-- [ ] T028 [P] [US1] Create a `BalanceListItem` Composable to display a single person's name and balance in `android/app/src/main/java/com/example/ledger/ui/BalanceScreen.kt`.
-- [ ] T029 [US1] Create the main `BalanceScreen` Composable that observes the `BalanceViewModel` and displays a `LazyColumn` of `BalanceListItem` Composables.
-- [ ] T030 [US1] Update `MainActivity.kt` to display the `BalanceScreen` and provide it with the `BalanceViewModel`.
-- [ ] T031 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
+- [X] T026 [US1] Create a BalanceViewModel.kt that uses the LedgerRepository to fetch the list of balances via a public StateFlow in android/app/src/main/java/com/example/ledger/viewmodel/.
+- [X] T027 [P] [TEST] Write unit tests for BalanceViewModel.
+- [X] T028 [P] [US1] Create a BalanceListItem Composable to display a single person's name and balance in android/app/src/main/java/com/example/ledger/ui/BalanceScreen.kt.
+- [X] T029 [US1] Create the main BalanceScreen Composable that observes the BalanceViewModel and displays a LazyColumn of BalanceListItem Composables.
+- [X] T030 [US1] Update MainActivity.kt to display the BalanceScreen and provide it with the BalanceViewModel.
+- [X] T031 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
 
 ## Phase 6: User Story 2 - Add a New Transaction
 
