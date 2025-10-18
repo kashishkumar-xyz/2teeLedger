@@ -12,23 +12,23 @@ This document outlines the implementation tasks for the teeLedger Android applic
 - [X] T002 [P] Install `cargo-ndk` to simplify the build process.
 - [X] T003 Verify the base Android project can be built successfully in the `android/` directory.
 - [X] T004 Add the JNA dependency to the `android/app/build.gradle.kts` file.
-- [ ] T005 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
+- [X] T005 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
 
 ## Phase 2: Foundational - FFI Contract & Rust Implementation
 
 *Build the FFI bridge in the Rust core. This is the foundation for all UI features.*
 
-- [ ] T006 Define the FFI-safe data structures (`Transaction`, `Balance`) in `ledger/src/ffi.rs` as specified in `contracts/ffi_ui_bindings.md`.
-- [ ] T007 Implement the `open_database` FFI function in `ledger/src/ffi.rs`.
-- [ ] T008 [FR-004] [TEST] Add input validation to the `add_transaction` FFI function in `ledger/src/ffi.rs` to handle empty person names and zero/invalid amounts.
-- [ ] T009 Implement the `add_transaction` FFI function in `ledger/src/ffi.rs`.
-- [ ] T010 Implement the `get_all_balances` FFI function in `ledger/src/ffi.rs`.
-- [ ] T011 Implement the `get_transactions_for_person` FFI function in `ledger/src/ffi.rs`.
-- [ ] T012 Implement the memory management functions (`free_string`, `free_balance_list`, `free_transaction_list`) in `ledger/src/ffi.rs`.
-- [ ] T013 Implement the `get_last_error` function for thread-local error handling in `ledger/src/ffi.rs`.
-- [ ] T014 [P] [TEST] Write integration tests in Rust to verify the behavior of all exported FFI functions.
-- [ ] T015 Compile the Rust library into `.so` files for all target Android architectures and place them in `android/app/src/main/jniLibs/`.
-- [ ] T016 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
+- [X] T006 Define the FFI-safe data structures (`Transaction`, `Balance`) in `ledger/src/ffi.rs` as specified in `contracts/ffi_ui_bindings.md`.
+- [X] T007 Implement the `open_database` FFI function in `ledger/src/ffi.rs`.
+- [X] T008 [FR-004] [TEST] Add input validation to the `add_transaction` FFI function in `ledger/src/ffi.rs` to handle empty person names and zero/invalid amounts.
+- [X] T009 Implement the `add_transaction` FFI function in `ledger/src/ffi.rs`.
+- [X] T010 Implement the `get_all_balances` FFI function in `ledger/src/ffi.rs`.
+- [X] T011 Implement the `get_transactions_for_person` FFI function in `ledger/src/ffi.rs`.
+- [X] T012 Implement the memory management functions (`free_string`, `free_balance_list`, `free_transaction_list`) in `ledger/src/ffi.rs`.
+- [X] T013 Implement the `get_last_error` function for thread-local error handling in `ledger/src/ffi.rs`.
+- [X] T014 [P] [TEST] Write integration tests in Rust to verify the behavior of all exported FFI functions.
+- [X] T015 Compile the Rust library into `.so` files for all target Android architectures and place them in `android/app/src/main/jniLibs/`.
+- [X] T016 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
 
 ## Phase 3: Foundational - Secure Key Management
 

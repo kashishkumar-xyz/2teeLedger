@@ -7,7 +7,8 @@ edition = "2021"
 crate-type = ["lib", "cdylib"]
 
 [dependencies]
-rusqlite = { version = "0.30.0", features = ["sqlcipher"] }
+lazy_static = "1.4.0"
+rusqlite = { version = "0.30.0", features = ["bundled-sqlcipher-vendored-openssl"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 zeroize = { version = "1.6", features = ["derive"] }
@@ -30,6 +31,10 @@ name = "ledger_integration_test"
 path = "../tests/integration/ledger_integration_test.rs"
 
 [[test]]
+name = "ffi_integration_test"
+path = "../tests/integration/ffi_integration_test.rs"
+
+[[test]]
 name = "backup_test"
 path = "../tests/unit/backup_test.rs"
 
@@ -37,9 +42,7 @@ path = "../tests/unit/backup_test.rs"
 name = "db_test"
 path = "../tests/unit/db_test.rs"
 
-[[test]]
-name = "ffi_test"
-path = "../tests/unit/ffi_test.rs"
+
 
 [[test]]
 name = "key_management_test"

@@ -1,257 +1,205 @@
-use crate::{backup, db, recovery};
-use serde_json;
-use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
+use crate::db;
+use std::ffi::{CStr, CString};
+use std::sync::Mutex;
+use lazy_static::lazy_static;
+use rusqlite::Connection;
+use chrono::Utc;
+use std::cell::RefCell;
 
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
+lazy_static! {
+    static ref DB_CONNECTION: Mutex<Option<Connection>> = Mutex::new(None);
+}
+
+#[repr(C)]
+pub struct Transaction {
+    pub person: *const c_char,
+    pub amount: f64,
+    pub timestamp: i64,
+    pub note: *const c_char, // Can be null
+}
+
+#[repr(C)]
+pub struct Balance {
+    pub person: *const c_char,
+    pub total: f64,
+}
+
 #[no_mangle]
-pub unsafe extern "C" fn add_transaction(
-    db_path: *const c_char,
-    encryption_key: *const c_char,
-    person: *const c_char,
-    amount: i64,
-    date: *const c_char,
-    note: *const c_char,
-) -> *const c_char {
-    let db_path_str = unsafe { CStr::from_ptr(db_path).to_str().unwrap() };
-    let encryption_key_str = unsafe { CStr::from_ptr(encryption_key).to_str().unwrap() };
-    let mut key = db::EncryptionKey(encryption_key_str.to_string());
+pub unsafe extern "C" fn open_database(path: *const c_char, passphrase: *const c_char) -> i32 {
+    let path_str = CStr::from_ptr(path).to_str().unwrap();
+    let passphrase_str = CStr::from_ptr(passphrase).to_str().unwrap();
+    let mut key = db::EncryptionKey(passphrase_str.to_string());
 
-    let person_str = unsafe { CStr::from_ptr(person).to_str().unwrap() };
-    let date_str = unsafe { CStr::from_ptr(date).to_str().unwrap() };
+    match db::open_encrypted_db(path_str, &mut key, false) {
+        Ok(conn) => {
+            let mut db_conn = DB_CONNECTION.lock().unwrap();
+            *db_conn = Some(conn);
+            0
+        }
+        Err(e) => {
+            update_last_error(&e.to_string());
+            -1
+        }
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn init_database() -> i32 {
+    let db_conn = DB_CONNECTION.lock().unwrap();
+    if let Some(conn) = &*db_conn {
+        match db::initialize_db(conn) {
+            Ok(_) => 0,
+            Err(e) => {
+                update_last_error(&e.to_string());
+                -1
+            }
+        }
+    } else {
+        update_last_error("Database not open");
+        -1
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn add_transaction(person: *const c_char, amount: f64, note: *const c_char) -> i32 {
+    let person_str = CStr::from_ptr(person).to_str().unwrap();
+    if person_str.is_empty() {
+        update_last_error("Person cannot be empty");
+        return -1; // Invalid input
+    }
+    if amount == 0.0 {
+        update_last_error("Amount cannot be zero");
+        return -1; // Invalid input
+    }
+
     let note_str = if note.is_null() {
         None
     } else {
-        Some(unsafe { CStr::from_ptr(note).to_str().unwrap() })
+        Some(CStr::from_ptr(note).to_str().unwrap())
     };
 
-    match db::open_encrypted_db(db_path_str, &mut key, true) {
-        Ok(conn) => match db::add_transaction(&conn, person_str, amount, date_str, note_str) {
-            Ok(_) => {
-                let success_msg = CString::new("Transaction added successfully").unwrap();
-                success_msg.into_raw()
-            }
+    let db_conn = DB_CONNECTION.lock().unwrap();
+    if let Some(conn) = &*db_conn {
+        let date = Utc::now().to_rfc3339();
+        match db::add_transaction(conn, person_str, amount as i64, &date, note_str) {
+            Ok(_) => 0,
             Err(e) => {
-                let error_msg = CString::new(format!("Failed to add transaction: {}", e)).unwrap();
-                error_msg.into_raw()
+                update_last_error(&e.to_string());
+                -1
             }
-        },
-        Err(e) => {
-            let error_msg = CString::new(format!("Failed to open database: {}", e)).unwrap();
-            error_msg.into_raw()
         }
-    }
-}
-
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
-#[no_mangle]
-pub unsafe extern "C" fn init_db(
-    db_path: *const c_char,
-    encryption_key: *const c_char,
-) -> *const c_char {
-    let db_path_str = unsafe { CStr::from_ptr(db_path).to_str().unwrap() };
-    let encryption_key_str = unsafe { CStr::from_ptr(encryption_key).to_str().unwrap() };
-    let mut key = db::EncryptionKey(encryption_key_str.to_string());
-
-    match db::open_encrypted_db(db_path_str, &mut key, false) {
-        Ok(conn) => match db::initialize_db(&conn) {
-            Ok(_) => {
-                let success_msg = CString::new("Database initialized successfully").unwrap();
-                success_msg.into_raw()
-            }
-            Err(e) => {
-                let error_msg =
-                    CString::new(format!("Database initialization failed: {}", e)).unwrap();
-                error_msg.into_raw()
-            }
-        },
-        Err(e) => {
-            let error_msg = CString::new(format!("Failed to open database: {}", e)).unwrap();
-            error_msg.into_raw()
-        }
-    }
-}
-
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
-#[no_mangle]
-pub unsafe extern "C" fn open_db(
-    db_path: *const c_char,
-    encryption_key: *const c_char,
-) -> *const c_char {
-    let db_path_str = unsafe { CStr::from_ptr(db_path).to_str().unwrap() };
-    let encryption_key_str = unsafe { CStr::from_ptr(encryption_key).to_str().unwrap() };
-    let mut key = db::EncryptionKey(encryption_key_str.to_string());
-
-    match db::open_encrypted_db(db_path_str, &mut key, true) {
-        Ok(_) => {
-            let success_msg = CString::new("Database opened successfully").unwrap();
-            success_msg.into_raw()
-        }
-        Err(e) => {
-            let error_msg = CString::new(format!("Failed to open database: {}", e)).unwrap();
-            error_msg.into_raw()
-        }
-    }
-}
-
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
-#[no_mangle]
-pub unsafe extern "C" fn list_transactions(
-    db_path: *const c_char,
-    encryption_key: *const c_char,
-    person: *const c_char,
-    since_date: *const c_char,
-    limit: i32,
-) -> *const c_char {
-    let db_path_str = unsafe { CStr::from_ptr(db_path).to_str().unwrap() };
-    let encryption_key_str = unsafe { CStr::from_ptr(encryption_key).to_str().unwrap() };
-    let mut key = db::EncryptionKey(encryption_key_str.to_string());
-
-    let person_option = if person.is_null() {
-        None
     } else {
-        Some(unsafe { CStr::from_ptr(person).to_str().unwrap() })
-    };
-    let since_date_option = if since_date.is_null() {
-        None
-    } else {
-        Some(unsafe { CStr::from_ptr(since_date).to_str().unwrap() })
-    };
-    let limit_option = if limit == 0 { None } else { Some(limit) };
-
-    match db::open_encrypted_db(db_path_str, &mut key, true) {
-        Ok(conn) => {
-            match db::list_transactions(&conn, person_option, since_date_option, limit_option) {
-                Ok(transactions) => {
-                    let json_string = serde_json::to_string(&transactions).unwrap();
-                    CString::new(json_string).unwrap().into_raw()
-                }
-                Err(e) => {
-                    let error_msg =
-                        CString::new(format!("Failed to list transactions: {}", e)).unwrap();
-                    error_msg.into_raw()
-                }
-            }
-        }
-        Err(e) => {
-            let error_msg = CString::new(format!("Failed to open database: {}", e)).unwrap();
-            error_msg.into_raw()
-        }
+        update_last_error("Database not open");
+        -1
     }
 }
 
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
 #[no_mangle]
-pub unsafe extern "C" fn list_balances(
-    db_path: *const c_char,
-    encryption_key: *const c_char,
-) -> *const c_char {
-    let db_path_str = unsafe { CStr::from_ptr(db_path).to_str().unwrap() };
-    let encryption_key_str = unsafe { CStr::from_ptr(encryption_key).to_str().unwrap() };
-    let mut key = db::EncryptionKey(encryption_key_str.to_string());
-
-    match db::open_encrypted_db(db_path_str, &mut key, true) {
-        Ok(conn) => match db::list_balances(&conn) {
+pub unsafe extern "C" fn get_all_balances(len: *mut u32) -> *const Balance {
+    let db_conn = DB_CONNECTION.lock().unwrap();
+    if let Some(conn) = &*db_conn {
+        match db::list_balances(conn) {
             Ok(balances) => {
-                let json_string = serde_json::to_string(&balances).unwrap();
-                CString::new(json_string).unwrap().into_raw()
+                let mut ffi_balances = Vec::with_capacity(balances.len());
+                for balance in balances {
+                    let person = CString::new(balance.person).unwrap().into_raw();
+                    ffi_balances.push(Balance { person, total: balance.balance as f64 });
+                }
+                *len = ffi_balances.len() as u32;
+                let ptr = ffi_balances.as_ptr();
+                std::mem::forget(ffi_balances);
+                ptr
             }
             Err(e) => {
-                let error_msg = CString::new(format!("Failed to list balances: {}", e)).unwrap();
-                error_msg.into_raw()
+                update_last_error(&e.to_string());
+                *len = 0;
+                std::ptr::null()
             }
-        },
-        Err(e) => {
-            let error_msg = CString::new(format!("Failed to open database: {}", e)).unwrap();
-            error_msg.into_raw()
         }
+    } else {
+        update_last_error("Database not open");
+        *len = 0;
+        std::ptr::null()
     }
 }
 
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
 #[no_mangle]
-pub unsafe extern "C" fn get_balance(
-    db_path: *const c_char,
-    encryption_key: *const c_char,
-    person: *const c_char,
-) -> *const c_char {
-    let db_path_str = unsafe { CStr::from_ptr(db_path).to_str().unwrap() };
-    let encryption_key_str = unsafe { CStr::from_ptr(encryption_key).to_str().unwrap() };
-    let mut key = db::EncryptionKey(encryption_key_str.to_string());
-    let person_str = unsafe { CStr::from_ptr(person).to_str().unwrap() };
-
-    match db::open_encrypted_db(db_path_str, &mut key, true) {
-        Ok(conn) => match db::get_balance(&conn, person_str) {
-            Ok(balance) => {
-                let balance_string = balance.to_string();
-                CString::new(balance_string).unwrap().into_raw()
+pub unsafe extern "C" fn get_transactions_for_person(person: *const c_char, len: *mut u32) -> *const Transaction {
+    let person_str = CStr::from_ptr(person).to_str().unwrap();
+    let db_conn = DB_CONNECTION.lock().unwrap();
+    if let Some(conn) = &*db_conn {
+        match db::list_transactions(conn, Some(person_str), None, None) {
+            Ok(transactions) => {
+                let mut ffi_transactions = Vec::with_capacity(transactions.len());
+                for transaction in transactions {
+                    let person = CString::new(transaction.person).unwrap().into_raw();
+                    let note = transaction.note.map(|s| CString::new(s).unwrap().into_raw()).unwrap_or(core::ptr::null_mut());
+                    let timestamp = chrono::DateTime::parse_from_rfc3339(&transaction.date).unwrap().timestamp();
+                    ffi_transactions.push(Transaction { person, amount: transaction.amount as f64, timestamp, note });
+                }
+                *len = ffi_transactions.len() as u32;
+                let ptr = ffi_transactions.as_ptr();
+                std::mem::forget(ffi_transactions);
+                ptr
             }
             Err(e) => {
-                let error_msg = CString::new(format!("Failed to get balance: {}", e)).unwrap();
-                error_msg.into_raw()
+                update_last_error(&e.to_string());
+                *len = 0;
+                std::ptr::null()
             }
-        },
-        Err(e) => {
-            let error_msg = CString::new(format!("Failed to open database: {}", e)).unwrap();
-            error_msg.into_raw()
+        }
+    } else {
+        update_last_error("Database not open");
+        *len = 0;
+        std::ptr::null()
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn free_string(s: *mut c_char) {
+    if s.is_null() { return; }
+    let _ = CString::from_raw(s);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn free_balance_list(ptr: *mut Balance, len: u32) {
+    if ptr.is_null() { return; }
+    let balances = Vec::from_raw_parts(ptr, len as usize, len as usize);
+    for balance in balances {
+        let _ = CString::from_raw(balance.person as *mut c_char);
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn free_transaction_list(ptr: *mut Transaction, len: u32) {
+    if ptr.is_null() { return; }
+    let transactions = Vec::from_raw_parts(ptr, len as usize, len as usize);
+    for transaction in transactions {
+        let _ = CString::from_raw(transaction.person as *mut c_char);
+        if !transaction.note.is_null() {
+            let _ = CString::from_raw(transaction.note as *mut c_char);
         }
     }
 }
 
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
-#[no_mangle]
-pub unsafe extern "C" fn restore_db(
-    backup_path: *const c_char,
-    db_path: *const c_char,
-) -> *const c_char {
-    let backup_path_str = unsafe { CStr::from_ptr(backup_path).to_str().unwrap() };
-    let db_path_str = unsafe { CStr::from_ptr(db_path).to_str().unwrap() };
-
-    match recovery::restore_db(backup_path_str, db_path_str) {
-        Ok(_) => {
-            let success_msg = CString::new("Restore successful").unwrap();
-            success_msg.into_raw()
-        }
-        Err(e) => {
-            let error_msg = CString::new(format!("Restore failed: {}", e)).unwrap();
-            error_msg.into_raw()
-        }
-    }
+thread_local! {
+    static LAST_ERROR: RefCell<Option<String>> = RefCell::new(None);
 }
 
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
 #[no_mangle]
-pub unsafe extern "C" fn backup_db(
-    db_path: *const c_char,
-    backup_path: *const c_char,
-) -> *const c_char {
-    let db_path_str = unsafe { CStr::from_ptr(db_path).to_str().unwrap() };
-    let backup_path_str = unsafe { CStr::from_ptr(backup_path).to_str().unwrap() };
+pub extern "C" fn get_last_error() -> *const c_char {
+    let mut error_message: *const c_char = std::ptr::null();
+    LAST_ERROR.with(|error| {
+        if let Some(e) = &*error.borrow() {
+            error_message = CString::new(e.clone()).unwrap().into_raw();
+        }
+    });
+    error_message
+}
 
-    match backup::backup_db(db_path_str, backup_path_str) {
-        Ok(_) => {
-            let success_msg = CString::new("Backup successful").unwrap();
-            success_msg.into_raw()
-        }
-        Err(e) => {
-            let error_msg = CString::new(format!("Backup failed: {}", e)).unwrap();
-            error_msg.into_raw()
-        }
-    }
+fn update_last_error(err: &str) {
+    LAST_ERROR.with(|error| {
+        *error.borrow_mut() = Some(err.to_string());
+    });
 }
