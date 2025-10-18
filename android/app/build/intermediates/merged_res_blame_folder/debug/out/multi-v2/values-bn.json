@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.ledger.app-mergeDebugResources-42:/values-bn/values-bn.xml",
+            "outputFile": "com.example.ledger.app-mergeDebugResources-43:/values-bn/values-bn.xml",
             "map": [
                 {
                     "source": "/home/kaz/.gradle/caches/transforms-3/2e022d90016b6576f2e722143c78f09a/transformed/jetified-ui-release/res/values-bn/values-bn.xml",

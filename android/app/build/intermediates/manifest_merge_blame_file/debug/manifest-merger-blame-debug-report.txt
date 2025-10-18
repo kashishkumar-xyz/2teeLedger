@@ -28,7 +28,7 @@
 20        android:dataExtractionRules="@xml/data_extraction_rules"
 20-->/home/kaz/Dev/rust/_current/2teeLedger/android/app/src/main/AndroidManifest.xml:7:9-65
 21        android:debuggable="true"
-22        android:extractNativeLibs="false"
+22        android:extractNativeLibs="true"
 23        android:fullBackupContent="@xml/backup_rules"
 23-->/home/kaz/Dev/rust/_current/2teeLedger/android/app/src/main/AndroidManifest.xml:8:9-54
 24        android:icon="@mipmap/ic_launcher"

@@ -43,10 +43,10 @@ This document outlines the implementation tasks for the teeLedger Android applic
 
 *Connect the Android app to the compiled Rust library.*
 
-- [ ] T021 Create the JNA interface `LedgerApi.java` in `android/app/src/main/java/com/example/ledger/ffi/` to map all the Rust FFI functions.
-- [ ] T022 Create a `LedgerRepository.kt` class in `android/app/src/main/java/com/example/ledger/ffi/` that provides a clean, coroutine-based Kotlin API over the `LedgerApi.java` interface.
-- [ ] T023 Implement the logic in `LedgerRepository.kt` to call the Rust functions, handle data type conversions, and manage memory (calling the `free_*` functions).
-- [ ] T024 [P] [TEST] Write integration tests for the `LedgerRepository.kt` to ensure data can be passed to and received from the Rust library correctly.
+- [X] T021 Create the JNA interface `LedgerApi.java` in `android/app/src/main/java/com/example/ledger/ffi/` to map all the Rust FFI functions.
+- [X] T022 Create a `LedgerRepository.kt` class in `android/app/src/main/java/com/example/ledger/ffi/` that provides a clean, coroutine-based Kotlin API over the `LedgerApi.java` interface.
+- [X] T023 Implement the logic in `LedgerRepository.kt` to call the Rust functions, handle data type conversions, and manage memory (calling the `free_*` functions).
+- [X] T024 [P] [TEST] Write integration tests for the `LedgerRepository.kt` to ensure data can be passed to and received from the Rust library correctly.
 - [ ] T025 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
 
 ## Phase 5: User Story 1 - View Balances

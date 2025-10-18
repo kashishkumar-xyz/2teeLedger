@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.ledger.app-mergeDebugResources-42:/values-or/values-or.xml",
+            "outputFile": "com.example.ledger.app-mergeDebugResources-43:/values-or/values-or.xml",
             "map": [
                 {
                     "source": "/home/kaz/.gradle/caches/transforms-3/e8b29d90b71fc1940a01f256cfd2dc00/transformed/jetified-material3-1.1.1/res/values-or/values-or.xml",

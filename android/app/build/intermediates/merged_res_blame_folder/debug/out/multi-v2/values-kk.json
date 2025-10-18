@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.ledger.app-mergeDebugResources-42:/values-kk/values-kk.xml",
+            "outputFile": "com.example.ledger.app-mergeDebugResources-43:/values-kk/values-kk.xml",
             "map": [
                 {
                     "source": "/home/kaz/.gradle/caches/transforms-3/d9df576dcaca9e76e24725bc3e0fc475/transformed/core-1.12.0/res/values-kk/values-kk.xml",

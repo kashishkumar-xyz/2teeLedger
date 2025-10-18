@@ -18,6 +18,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        ndk {
+            abiFilters.addAll(listOf("x86", "x86_64", "arm64-v8a"))
+        }
     }
 
     buildTypes {
@@ -29,6 +32,22 @@ android {
             )
         }
     }
+
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDir("src/main/jniLibs")
+        }
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -42,16 +61,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
 }
 
 dependencies {
 
-    implementation("net.java.dev.jna:jna:5.14.0")
+    implementation("net.java.dev.jna:jna:5.14.0@aar")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.1")
@@ -67,4 +81,24 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+val copyNativeLibs by tasks.registering(Copy::class) {
+    destinationDir = file("src/main/jniLibs")
+    from("../../target/x86_64-linux-android/release") {
+        include("libledger_lib.so")
+        into("x86_64")
+    }
+    from("../../target/i686-linux-android/release") {
+        include("libledger_lib.so")
+        into("x86")
+    }
+    from("../../target/aarch64-linux-android/release") {
+        include("libledger_lib.so")
+        into("arm64-v8a")
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn(copyNativeLibs)
 }

@@ -227,6 +227,7 @@ string dropdown_menu
 string expanded
 string in_progress
 string indeterminate
+string jna_library_appname
 string m3c_bottom_sheet_pane_title
 string navigation_menu
 string not_selected
