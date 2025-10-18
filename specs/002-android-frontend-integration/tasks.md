@@ -85,11 +85,11 @@ This document outlines the implementation tasks for the teeLedger Android applic
 
 *Final polish and non-functional requirements.*
 
-- [ ] T043 [NFR] Implement loading indicators in the UI while waiting for FFI calls to complete.
-- [ ] T044 [NFR] Implement UI handling for FFI errors (e.g., from `get_last_error`) and display user-friendly messages.
-- [ ] T045 [TEST] Write UI tests (Espresso) for the 'Add Transaction' workflow (US2).
-- [ ] T046 [TEST] Write UI tests (Espresso) for the 'View Balances' and 'View History' workflows (US1, US3).
-- [ ] T047 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
+- [X] T043 [NFR] Implement loading indicators in the UI while waiting for FFI calls to complete.
+- [X] T044 [NFR] Implement UI handling for FFI errors (e.g., from get_last_error) and display user-friendly messages.
+- [X] T045 [TEST] Write UI tests (Espresso) for the 'Add Transaction' workflow (US2).
+- [X] T046 [TEST] Write UI tests (Espresso) for the 'View Balances' and 'View History' workflows (US1, US3).
+- [X] T047 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
 
 ---
 

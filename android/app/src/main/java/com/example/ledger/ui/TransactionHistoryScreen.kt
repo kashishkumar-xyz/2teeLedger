@@ -22,6 +22,7 @@ import java.util.*
 fun TransactionHistoryScreen(personName: String, viewModel: TransactionHistoryViewModel) {
     val transactions by viewModel.transactions.collectAsState()
     val error by viewModel.error.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     LaunchedEffect(personName) {
         viewModel.loadTransactionHistory(personName)
@@ -35,16 +36,15 @@ fun TransactionHistoryScreen(personName: String, viewModel: TransactionHistoryVi
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
         ) {
-            if (error != null) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = error!!, color = Color.Red)
-                }
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else if (error != null) {
+                Text(text = error!!, color = Color.Red)
             } else if (transactions.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "No transaction history found.")
-                }
+                Text(text = "No transaction history found.")
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()

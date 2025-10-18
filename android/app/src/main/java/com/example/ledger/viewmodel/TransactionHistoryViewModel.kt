@@ -16,12 +16,18 @@ class TransactionHistoryViewModel(private val ledgerRepository: LedgerRepository
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     fun loadTransactionHistory(person: String) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 _transactions.value = ledgerRepository.getTransactionsForPerson(person)
             } catch (e: Exception) {
                 _error.value = "Failed to load transaction history: ${e.message}"
+            } finally {
+                _isLoading.value = false
             }
         }
     }
