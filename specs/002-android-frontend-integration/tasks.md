@@ -8,10 +8,10 @@ This document outlines the implementation tasks for the teeLedger Android applic
 
 *Environment and tooling setup for Rust and Android cross-compilation.*
 
-- [ ] T001 [P] Install Rust Android cross-compilation targets (`aarch64-linux-android`, `x86_64-linux-android`).
-- [ ] T002 [P] Install `cargo-ndk` to simplify the build process.
-- [ ] T003 Verify the base Android project can be built successfully in the `android/` directory.
-- [ ] T004 Add the JNA dependency to the `android/app/build.gradle.kts` file.
+- [X] T001 [P] Install Rust Android cross-compilation targets (`aarch64-linux-android`, `x86_64-linux-android`).
+- [X] T002 [P] Install `cargo-ndk` to simplify the build process.
+- [X] T003 Verify the base Android project can be built successfully in the `android/` directory.
+- [X] T004 Add the JNA dependency to the `android/app/build.gradle.kts` file.
 - [ ] T005 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
 
 ## Phase 2: Foundational - FFI Contract & Rust Implementation

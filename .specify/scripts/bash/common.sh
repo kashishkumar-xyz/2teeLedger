@@ -92,20 +92,18 @@ get_feature_paths() {
         has_git_repo="true"
     fi
     
-    local feature_dir=$(get_feature_dir "$repo_root" "$current_branch")
-    
     cat <<EOF
 REPO_ROOT='$repo_root'
 CURRENT_BRANCH='$current_branch'
 HAS_GIT='$has_git_repo'
-FEATURE_DIR='$feature_dir'
-FEATURE_SPEC='$feature_dir/spec.md'
-IMPL_PLAN='$feature_dir/plan.md'
-TASKS='$feature_dir/tasks.md'
-RESEARCH='$feature_dir/research.md'
-DATA_MODEL='$feature_dir/data-model.md'
-QUICKSTART='$feature_dir/quickstart.md'
-CONTRACTS_DIR='$feature_dir/contracts'
+FEATURE_DIR='/home/kaz/Dev/rust/_current/2teeLedger/specs/002-android-frontend-integration'
+FEATURE_SPEC='/home/kaz/Dev/rust/_current/2teeLedger/specs/002-android-frontend-integration/spec.md'
+IMPL_PLAN='/home/kaz/Dev/rust/_current/2teeLedger/specs/002-android-frontend-integration/plan.md'
+TASKS='/home/kaz/Dev/rust/_current/2teeLedger/specs/002-android-frontend-integration/tasks.md'
+RESEARCH='/home/kaz/Dev/rust/_current/2teeLedger/specs/002-android-frontend-integration/research.md'
+DATA_MODEL='/home/kaz/Dev/rust/_current/2teeLedger/specs/002-android-frontend-integration/data-model.md'
+QUICKSTART='/home/kaz/Dev/rust/_current/2teeLedger/specs/002-android-frontend-integration/quickstart.md'
+CONTRACTS_DIR='/home/kaz/Dev/rust/_current/2teeLedger/specs/002-android-frontend-integration/contracts'
 EOF
 }
 
