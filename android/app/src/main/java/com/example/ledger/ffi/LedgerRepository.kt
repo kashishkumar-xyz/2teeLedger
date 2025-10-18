@@ -24,13 +24,22 @@ class LedgerRepository(private val context: Context) {
         withContext(Dispatchers.IO) {
             val dbPath = context.getDatabasePath("ledger.db").absolutePath
             val passphrase = Base64.encodeToString(key, Base64.NO_WRAP)
-            val result = ledgerApi.open_database(dbPath, passphrase)
-            if (result != 0) {
-                // try to init db
-                val initResult = ledgerApi.init_database()
-                if (initResult != 0) {
-                    throw Exception("Failed to initialize database")
-                }
+
+            // 1. Open the database
+            val openResult = ledgerApi.open_database(dbPath, passphrase)
+            if (openResult != 0) {
+                val error = ledgerApi.get_last_error()?.getString(0) ?: "Unknown error opening database"
+                ledgerApi.free_string(ledgerApi.get_last_error())
+                throw Exception("Failed to open database: $error")
+            }
+
+            // 2. Always attempt to initialize the database.
+            //    The Rust side should handle this idempotently (e.g., CREATE TABLE IF NOT EXISTS).
+            val initResult = ledgerApi.init_database()
+            if (initResult != 0) {
+                val error = ledgerApi.get_last_error()?.getString(0) ?: "Unknown error initializing database"
+                ledgerApi.free_string(ledgerApi.get_last_error())
+                throw Exception("Failed to initialize database: $error")
             }
         }
     }
