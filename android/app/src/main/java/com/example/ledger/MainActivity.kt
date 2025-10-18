@@ -14,8 +14,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val keyManager = KeyManager()
-        val key = keyManager.getOrCreateKey()
+        val keyManager = KeyManager(applicationContext)
+        val key: ByteArray = keyManager.getOrCreateDatabaseKey()
 
         val ledgerRepository = LedgerRepository(applicationContext)
         lifecycleScope.launch {

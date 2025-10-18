@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.ledger"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.ledger"
@@ -19,7 +19,7 @@ android {
             useSupportLibrary = true
         }
         ndk {
-            abiFilters.addAll(listOf("x86", "x86_64", "arm64-v8a"))
+            abiFilters.addAll(listOf("x86", "arm64-v8a"))
         }
     }
 
@@ -44,26 +44,29 @@ android {
             useLegacyPackaging = true
         }
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += setOf("META-INF/DEPENDENCIES", "META-INF/LICENSE.md", "META-INF/NOTICE.md")
         }
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
 }
 
 dependencies {
+    // SQLCipher for Android
+    api("net.zetetic:sqlcipher-android:4.5.6")
+    implementation("androidx.sqlite:sqlite-ktx:2.4.0")
 
     implementation("net.java.dev.jna:jna:5.14.0@aar")
     implementation("androidx.core:core-ktx:1.12.0")
@@ -83,22 +86,4 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
 
-val copyNativeLibs by tasks.registering(Copy::class) {
-    destinationDir = file("src/main/jniLibs")
-    from("../../target/x86_64-linux-android/release") {
-        include("libledger_lib.so")
-        into("x86_64")
-    }
-    from("../../target/i686-linux-android/release") {
-        include("libledger_lib.so")
-        into("x86")
-    }
-    from("../../target/aarch64-linux-android/release") {
-        include("libledger_lib.so")
-        into("arm64-v8a")
-    }
-}
 
-tasks.named("preBuild") {
-    dependsOn(copyNativeLibs)
-}

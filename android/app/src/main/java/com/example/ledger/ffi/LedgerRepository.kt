@@ -7,21 +7,23 @@ import com.example.ledger.model.Transaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.crypto.SecretKey
+import com.sun.jna.Native
 
 class LedgerRepository(private val context: Context) {
 
     companion object {
         init {
+            System.loadLibrary("sqlcipher") // Load libsqlcipher.so first
             System.loadLibrary("ledger_lib")
         }
     }
 
     private val ledgerApi = LedgerApi.INSTANCE
 
-    suspend fun openDatabase(key: SecretKey) {
+    suspend fun openDatabase(key: ByteArray) {
         withContext(Dispatchers.IO) {
             val dbPath = context.getDatabasePath("ledger.db").absolutePath
-            val passphrase = Base64.encodeToString(key.encoded, Base64.NO_WRAP)
+            val passphrase = Base64.encodeToString(key, Base64.NO_WRAP)
             val result = ledgerApi.open_database(dbPath, passphrase)
             if (result != 0) {
                 // try to init db
@@ -52,8 +54,14 @@ class LedgerRepository(private val context: Context) {
             if (count == 0) {
                 return@withContext emptyList()
             }
-            val ffiBalances = LedgerApi.Balance(ptr).toArray(count) as Array<LedgerApi.Balance>
-            val balances = ffiBalances.map { Balance(it.person.getString(0), it.total) }
+            val ffiBalances = mutableListOf<LedgerApi.Balance>()
+            val structSize = LedgerApi.Balance().size()
+            for (i in 0 until count) {
+                val balance = LedgerApi.Balance(ptr.share((i * structSize).toLong()))
+                balance.read()
+                ffiBalances.add(balance)
+            }
+            val balances = ffiBalances.toList().map { Balance(it.person.getString(0), it.total) }
             ledgerApi.free_balance_list(ptr, count)
             balances
         }
@@ -67,8 +75,14 @@ class LedgerRepository(private val context: Context) {
             if (count == 0) {
                 return@withContext emptyList()
             }
-            val ffiTransactions = LedgerApi.Transaction(ptr).toArray(count) as Array<LedgerApi.Transaction>
-            val transactions = ffiTransactions.map {
+            val ffiTransactions = mutableListOf<LedgerApi.Transaction>()
+            val structSize = LedgerApi.Transaction().size()
+            for (i in 0 until count) {
+                val transaction = LedgerApi.Transaction(ptr.share((i * structSize).toLong()))
+                transaction.read()
+                ffiTransactions.add(transaction)
+            }
+            val transactions = ffiTransactions.toList().map {
                 Transaction(
                     it.person.getString(0),
                     it.amount,
