@@ -56,10 +56,45 @@ class BalanceViewModelTest {
 
         // When
         viewModel = BalanceViewModel(ledgerRepository)
+        viewModel.loadBalances() // Manually call since init is removed
 
         // Then
         testDispatcher.scheduler.advanceUntilIdle() // Execute coroutines
         assertEquals(emptyList<Balance>(), viewModel.balances.value)
         assertEquals("Failed to load balances: $errorMessage", viewModel.error.value)
+    }
+
+    @Test
+    fun `saveTransaction calls repository and refreshes balances`() = runTest {
+        // Given
+        whenever(ledgerRepository.getAllBalances()).thenReturn(emptyList()) // Initial state
+        viewModel = BalanceViewModel(ledgerRepository)
+        viewModel.loadBalances()
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals(emptyList<Balance>(), viewModel.balances.value)
+
+        // When
+        val newBalances = listOf(Balance("Alice", 50.0))
+        whenever(ledgerRepository.getAllBalances()).thenReturn(newBalances) // State after refresh
+        viewModel.saveTransaction("Alice", 50.0, "Lunch")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertEquals(newBalances, viewModel.balances.value)
+    }
+
+    @Test
+    fun `saveTransaction handles error`() = runTest {
+        // Given
+        val errorMessage = "Failed to save"
+        whenever(ledgerRepository.addTransaction("Alice", 50.0, "Lunch")).thenThrow(RuntimeException(errorMessage))
+        viewModel = BalanceViewModel(ledgerRepository)
+
+        // When
+        viewModel.saveTransaction("Alice", 50.0, "Lunch")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertEquals("Failed to save transaction: $errorMessage", viewModel.error.value)
     }
 }

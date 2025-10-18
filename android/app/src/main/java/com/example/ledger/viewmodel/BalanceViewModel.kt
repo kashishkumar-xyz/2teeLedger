@@ -16,13 +16,31 @@ class BalanceViewModel(private val ledgerRepository: LedgerRepository) : ViewMod
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     fun loadBalances() {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 _balances.value = ledgerRepository.getAllBalances()
             } catch (e: Exception) {
                 _error.value = "Failed to load balances: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun saveTransaction(person: String, amount: Double, note: String?) {
+        viewModelScope.launch {
+            // Don't set loading for save, it's a quick operation and loadBalances will handle it
+            try {
+                ledgerRepository.addTransaction(person, amount, note)
+                // Refresh the balance list after a successful transaction
+                loadBalances()
+            } catch (e: Exception) {
+                _error.value = "Failed to save transaction: ${e.message}"
             }
         }
     }

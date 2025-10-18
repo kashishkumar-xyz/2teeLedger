@@ -10,6 +10,10 @@ class ViewModelFactory(private val ledgerRepository: LedgerRepository) : ViewMod
             @Suppress("UNCHECKED_CAST")
             return BalanceViewModel(ledgerRepository) as T
         }
+        if (modelClass.isAssignableFrom(TransactionHistoryViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return TransactionHistoryViewModel(ledgerRepository) as T
+        }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

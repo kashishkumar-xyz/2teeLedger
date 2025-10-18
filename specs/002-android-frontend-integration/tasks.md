@@ -64,22 +64,22 @@ This document outlines the implementation tasks for the teeLedger Android applic
 
 *Goal: As a user, I want to easily add a new financial transaction from the main screen.*
 
-- [ ] T032 [P] [US2] Create an `AddTransactionScreen` Composable containing `TextField`s for person, amount, and an optional note, along with a 'Save' button, in `android/app/src/main/java/com/example/ledger/ui/AddTransactionScreen.kt`.
-- [ ] T033 [US2] Add a `saveTransaction` method to the `BalanceViewModel` that calls the corresponding method in `LedgerRepository`.
-- [ ] T034 [P] [TEST] Write unit tests for the `saveTransaction` logic in the `BalanceViewModel`.
-- [ ] T035 [US2] Add a Floating Action Button to the `BalanceScreen` to navigate to the `AddTransactionScreen`.
-- [ ] T036 [US2] Implement the save logic in the `AddTransactionScreen` to call the `BalanceViewModel`, which in turn calls the FFI function.
-- [ ] T037 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
+- [X] T032 [P] [US2] Create an AddTransactionScreen Composable containing TextFields for person, amount, and an optional note, along with a 'Save' button, in android/app/src/main/java/com/example/ledger/ui/AddTransactionScreen.kt.
+- [X] T033 [US2] Add a `saveTransaction` method to the `BalanceViewModel` that calls the corresponding method in `LedgerRepository`.
+- [X] T034 [P] [TEST] Write unit tests for the saveTransaction logic in the BalanceViewModel.
+- [X] T035 [US2] Add a Floating Action Button to the BalanceScreen to navigate to the AddTransactionScreen.
+- [X] T036 [US2] Implement the save logic in the AddTransactionScreen to call the BalanceViewModel, which in turn calls the FFI function.
+- [X] T037 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
 
 ## Phase 7: User Story 3 - View Transaction History
 
 *Goal: As a user, I want to tap on a person's name in the balance list to see a detailed history of all our transactions.*
 
-- [ ] T038 [P] [US3] Create a `TransactionHistoryScreen` Composable that displays a `LazyColumn` of `Transaction` items in `android/app/src/main/java/com/example/ledger/ui/TransactionHistoryScreen.kt`.
-- [ ] T039 [US3] Create a `TransactionHistoryViewModel` that can fetch all transactions for a specific person from the `LedgerRepository` in `android/app/src/main/java/com/example/ledger/viewmodel/`.
-- [ ] T040 [P] [TEST] Write unit tests for `TransactionHistoryViewModel`.
-- [ ] T041 [US3] Implement navigation from the `BalanceScreen` to the `TransactionHistoryScreen`, passing the selected person's name when an item is tapped.
-- [ ] T042 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
+- [X] T038 [P] [US3] Create a `TransactionHistoryScreen` Composable that displays a `LazyColumn` of `Transaction` items in `android/app/src/main/java/com/example/ledger/ui/TransactionHistoryScreen.kt`.
+- [X] T039 [US3] Create a TransactionHistoryViewModel that can fetch all transactions for a specific person from the LedgerRepository in android/app/src/main/java/com/example/ledger/viewmodel/.
+- [X] T040 [P] [TEST] Write unit tests for TransactionHistoryViewModel.
+- [X] T041 [US3] Implement navigation from the BalanceScreen to the TransactionHistoryScreen, passing the selected person's name when an item is tapped.
+- [X] T042 [CHECKPOINT] Perform a full build in Android Studio to ensure the project compiles successfully.
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 

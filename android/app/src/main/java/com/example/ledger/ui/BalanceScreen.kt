@@ -1,5 +1,6 @@
 package com.example.ledger.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,8 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -25,7 +30,11 @@ import com.example.ledger.viewmodel.BalanceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BalanceScreen(viewModel: BalanceViewModel) {
+fun BalanceScreen(
+    viewModel: BalanceViewModel,
+    onNavigateToHistory: (String) -> Unit,
+    onNavigateToAddTransaction: () -> Unit
+) {
     val balances by viewModel.balances.collectAsState()
     val error by viewModel.error.collectAsState()
 
@@ -34,6 +43,11 @@ fun BalanceScreen(viewModel: BalanceViewModel) {
             TopAppBar(
                 title = { Text("Ledger Balances") }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onNavigateToAddTransaction) {
+                Icon(Icons.Default.Add, contentDescription = "Add Transaction")
+            }
         }
     ) { paddingValues ->
         Box(
@@ -47,13 +61,15 @@ fun BalanceScreen(viewModel: BalanceViewModel) {
                 }
             } else if (balances.isEmpty()) {
                  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    // This could also be a loading indicator
                     Text(text = "No balances found.")
                 }
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(balances) { balance ->
-                        BalanceListItem(balance = balance)
+                        BalanceListItem(
+                            balance = balance,
+                            onClick = { onNavigateToHistory(balance.person) }
+                        )
                     }
                 }
             }
@@ -62,11 +78,12 @@ fun BalanceScreen(viewModel: BalanceViewModel) {
 }
 
 @Composable
-fun BalanceListItem(balance: Balance) {
+fun BalanceListItem(balance: Balance, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clickable(onClick = onClick)
     ) {
         Row(
             modifier = Modifier
@@ -85,11 +102,11 @@ fun BalanceListItem(balance: Balance) {
 @Preview(showBackground = true)
 @Composable
 fun BalanceListItemPreview_Positive() {
-    BalanceListItem(balance = Balance("Alice", 150.75))
+    BalanceListItem(balance = Balance("Alice", 150.75), onClick = {})
 }
 
 @Preview(showBackground = true)
 @Composable
 fun BalanceListItemPreview_Negative() {
-    BalanceListItem(balance = Balance("Bob", -25.50))
+    BalanceListItem(balance = Balance("Bob", -25.50), onClick = {})
 }
