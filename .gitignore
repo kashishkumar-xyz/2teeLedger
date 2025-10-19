@@ -41,12 +41,7 @@ Thumbs.db
 # Perosnal & AI Notes
 
 # Android
-/android/app/build/
-/android/build/
-/android/.gradle/
-/android/.idea/
-/android/local.properties
-/android/app/src/main/jniLibs/
+
 *.apk
 *.aab
 *.ap_
@@ -63,17 +58,19 @@ Thumbs.db
 #android/.gradle/9.0-milestone-1/fileHashes/fileHashes.bin
 #android/.gradle/9.0-milestone-1/
 
-android/
+android/app/build/
+android/build/
+android/.gradle/
+android/.idea/
+android/local.properties
+android/app/src/main/jniLibs/
+
+android/**/build
 
 !android/app/src/
-!android/app/src/**
-
 !android/app/build.gradle.kts
 !android/app/proguard-rules.pro 
-
 !android/gradle/
-!android/gradle/**
-
 !android/build.gradle.kts
 !android/gradle.properties
 !android/local.properties
