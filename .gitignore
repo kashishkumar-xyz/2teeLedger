@@ -39,7 +39,6 @@ Thumbs.db
 .idea/
 
 # Perosnal & AI Notes
-.notes/
 
 # Android
 /android/app/build/
@@ -58,8 +57,24 @@ Thumbs.db
 *.jks
 *.keystore
 *.jar
-android/.gradle/file-system.probe
-android/.gradle/buildOutputCleanup/
-android/.gradle/9.0-milestone-1/executionHistory/executionHistory.lock
-android/.gradle/9.0-milestone-1/fileHashes/fileHashes.bin
-android/.gradle/9.0-milestone-1/
+#android/.gradle/file-system.probe
+#android/.gradle/buildOutputCleanup/
+#android/.gradle/9.0-milestone-1/executionHistory/executionHistory.lock
+#android/.gradle/9.0-milestone-1/fileHashes/fileHashes.bin
+#android/.gradle/9.0-milestone-1/
+
+android/*
+
+!android/app/src/
+!android/app/src/**
+
+!android/app/build.gradle.kts
+!android/app/proguard-rules.pro 
+
+!android/gradle/
+!android/gradle/**
+
+!android/build.gradle.kts
+!android/gradle.properties
+!android/local.properties
+!android/settings.gradle.kts
