@@ -63,7 +63,7 @@ Thumbs.db
 #android/.gradle/9.0-milestone-1/fileHashes/fileHashes.bin
 #android/.gradle/9.0-milestone-1/
 
-android/*
+android/
 
 !android/app/src/
 !android/app/src/**
