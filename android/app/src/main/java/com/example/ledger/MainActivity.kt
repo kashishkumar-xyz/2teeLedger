@@ -24,7 +24,20 @@ import com.example.ledger.viewmodel.TransactionHistoryViewModel
 import com.example.ledger.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
 
+/**
+ * The main activity of the application.
+ *
+ * This activity is responsible for setting up the UI and initializing the database.
+ */
 class MainActivity : ComponentActivity() {
+    /**
+     * Called when the activity is first created.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in onSaveInstanceState(Bundle).
+     *     Note: Otherwise it is null.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

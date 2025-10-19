@@ -9,8 +9,21 @@ import kotlinx.coroutines.withContext
 import javax.crypto.SecretKey
 import com.sun.jna.Native
 
+/**
+ * A repository for interacting with the ledger.
+ *
+ * This class provides a set of methods for interacting with the ledger,
+ * including opening the database, adding transactions, and getting balances.
+ *
+ * @param context The application context.
+ */
 class LedgerRepository(private val context: Context) {
 
+    /**
+     * The companion object for the `LedgerRepository` class.
+     *
+     * This object is responsible for loading the native libraries.
+     */
     companion object {
         init {
             System.loadLibrary("sqlcipher") // Load libsqlcipher.so first
@@ -20,6 +33,11 @@ class LedgerRepository(private val context: Context) {
 
     private val ledgerApi = LedgerApi.INSTANCE
 
+    /**
+     * Opens the database.
+     *
+     * @param key The encryption key for the database.
+     */
     suspend fun openDatabase(key: ByteArray) {
         withContext(Dispatchers.IO) {
             val dbPath = context.getDatabasePath("ledger.db").absolutePath
@@ -44,6 +62,13 @@ class LedgerRepository(private val context: Context) {
         }
     }
 
+    /**
+     * Adds a new transaction to the ledger.
+     *
+     * @param person The person associated with the transaction.
+     * @param amount The amount of the transaction.
+     * @param note An optional note for the transaction.
+     */
     suspend fun addTransaction(person: String, amount: Double, note: String?) {
         withContext(Dispatchers.IO) {
             val result = ledgerApi.add_transaction(person, amount, note)
@@ -55,6 +80,11 @@ class LedgerRepository(private val context: Context) {
         }
     }
 
+    /**
+     * Gets all balances from the ledger.
+     *
+     * @return A list of all balances.
+     */
     suspend fun getAllBalances(): List<Balance> {
         return withContext(Dispatchers.IO) {
             val len = intArrayOf(0)
@@ -76,6 +106,12 @@ class LedgerRepository(private val context: Context) {
         }
     }
 
+    /**
+     * Gets all transactions for a specific person.
+     *
+     * @param person The person to get the transactions for.
+     * @return A list of all transactions for the person.
+     */
     suspend fun getTransactionsForPerson(person: String): List<Transaction> {
         return withContext(Dispatchers.IO) {
             val len = intArrayOf(0)

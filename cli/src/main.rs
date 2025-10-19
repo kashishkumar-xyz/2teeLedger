@@ -1,93 +1,136 @@
+//! # Ledger CLI
+//!
+//! A command-line interface for managing a ledger database.
+//!
+//! This CLI provides a set of commands for interacting with the ledger,
+//! including adding transactions, listing transactions, and managing the database.
+
 use clap::{Parser, Subcommand};
 use std::ffi::{CStr, CString};
 
+/// The main command-line interface for the ledger.
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
+    /// The subcommand to execute.
     #[command(subcommand)]
     command: Commands,
 }
 
+/// The available subcommands for the CLI.
 #[derive(Subcommand)]
 enum Commands {
-    /// Adds a new transaction
+    /// Adds a new transaction to the ledger.
     Add {
+        /// The path to the database file.
         #[arg(long)]
         db_path: String,
+        /// The encryption key for the database.
         #[arg(long)]
         encryption_key: String,
+        /// The person associated with the transaction.
         #[arg(short, long)]
         person: String,
+        /// The amount of the transaction.
         #[arg(short, long, allow_hyphen_values = true)]
         amount: i32,
+        /// The date of the transaction.
         #[arg(short, long, allow_hyphen_values = true)]
         date: String,
+        /// An optional note for the transaction.
         #[arg(short, long)]
         note: Option<String>,
     },
-    /// Lists transactions
+    /// Lists transactions from the ledger.
     List {
+        /// The path to the database file.
         #[arg(long)]
         db_path: String,
+        /// The encryption key for the database.
         #[arg(long)]
         encryption_key: String,
+        /// The person to filter transactions by.
         #[arg(short, long)]
         person: Option<String>,
+        /// The date to start listing transactions from.
         #[arg(long)]
         since_date: Option<String>,
+        /// The maximum number of transactions to list.
         #[arg(short, long)]
         limit: Option<i32>,
     },
-    /// Gets the balance for a person
+    /// Gets the balance for a specific person.
     Balance {
+        /// The path to the database file.
         #[arg(long)]
         db_path: String,
+        /// The encryption key for the database.
         #[arg(long)]
         encryption_key: String,
+        /// The person to get the balance for.
         #[arg(short, long)]
         person: String,
     },
-    /// Lists all balances
+    /// Lists all balances in the ledger.
     Balances {
+        /// The path to the database file.
         #[arg(long)]
         db_path: String,
+        /// The encryption key for the database.
         #[arg(long)]
         encryption_key: String,
     },
-    /// Initializes the database
+    /// Initializes a new ledger database.
     InitDb {
+        /// The path to the database file.
         #[arg(short, long)]
         db_path: String,
+        /// The encryption key for the database.
         #[arg(long)]
         encryption_key: String,
     },
-    /// Opens the database
+    /// Opens an existing ledger database.
     OpenDb {
+        /// The path to the database file.
         #[arg(short, long)]
         db_path: String,
+        /// The encryption key for the database.
         #[arg(long)]
         encryption_key: String,
     },
-    /// Backs up the database
+    /// Backs up the ledger database.
     BackupDb {
+        /// The path to the database file.
         #[arg(short, long)]
         db_path: String,
+        /// The encryption key for the database.
         #[arg(long)]
         encryption_key: String,
+        /// The path to the backup file.
         #[arg(long)]
         backup_path: String,
     },
-    /// Restores the database
+    /// Restores the ledger database from a backup.
     RestoreDb {
+        /// The path to the backup file.
         #[arg(short, long)]
         backup_path: String,
+        /// The encryption key for the database.
         #[arg(long)]
         encryption_key: String,
+        /// The path to the database file.
         #[arg(long)]
         db_path: String,
     },
 }
 
+/// The main entry point for the CLI.
+///
+/// This function parses the command-line arguments and executes the appropriate subcommand.
+///
+/// # Returns
+///
+/// Returns `Ok(())` if the command was successful, or an error if the command failed.
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 

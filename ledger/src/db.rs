@@ -5,6 +5,19 @@ use std::collections::HashMap;
 use uuid::Uuid;
 use zeroize::Zeroize;
 
+/// Adds a new transaction to the database.
+///
+/// # Arguments
+///
+/// * `conn` - The database connection.
+/// * `person` - The person associated with the transaction.
+/// * `amount` - The amount of the transaction.
+/// * `date` - The date of the transaction.
+/// * `note` - An optional note for the transaction.
+///
+/// # Returns
+///
+/// Returns `Ok(())` if the transaction was added successfully, or an error if the transaction failed.
 pub fn add_transaction(
     conn: &Connection,
     person: &str,
@@ -47,6 +60,18 @@ pub fn add_transaction(
     Ok(())
 }
 
+/// Lists transactions from the database.
+///
+/// # Arguments
+///
+/// * `conn` - The database connection.
+/// * `person` - An optional person to filter transactions by.
+/// * `since_date` - An optional date to start listing transactions from.
+/// * `limit` - An optional limit on the number of transactions to return.
+///
+/// # Returns
+///
+/// Returns a list of transactions if the query was successful, or an error if the query failed.
 pub fn list_transactions(
     conn: &Connection,
     person: Option<&str>,
@@ -109,6 +134,15 @@ pub fn list_transactions(
     Ok(transactions)
 }
 
+/// Lists all balances in the database.
+///
+/// # Arguments
+///
+/// * `conn` - The database connection.
+///
+/// # Returns
+///
+/// Returns a list of balances if the query was successful, or an error if the query failed.
 pub fn list_balances(conn: &Connection) -> Result<Vec<Balance>, Box<dyn std::error::Error>> {
     let transactions = list_transactions(conn, None, None, None)?;
 
@@ -126,16 +160,39 @@ pub fn list_balances(conn: &Connection) -> Result<Vec<Balance>, Box<dyn std::err
     Ok(balances)
 }
 
+/// Gets the balance for a specific person.
+///
+/// # Arguments
+///
+/// * `conn` - The database connection.
+/// * `person` - The person to get the balance for.
+///
+/// # Returns
+///
+/// Returns the balance for the person if the query was successful, or an error if the query failed.
 pub fn get_balance(conn: &Connection, person: &str) -> Result<i64, Box<dyn std::error::Error>> {
     let transactions = list_transactions(conn, Some(person), None, None)?;
     let total_balance: i64 = transactions.iter().map(|tx| tx.amount).sum();
     Ok(total_balance)
 }
 
+/// Represents an encryption key.
+///
+/// This struct is a wrapper around a `String` that automatically zeroes out the
+/// key when it goes out of scope.
 #[derive(Zeroize)]
 #[zeroize(drop)]
 pub struct EncryptionKey(pub String);
 
+/// Initializes the database by creating the `transactions_history` table if it does not exist.
+///
+/// # Arguments
+///
+/// * `conn` - The database connection.
+///
+/// # Returns
+///
+/// Returns `Ok(())` if the database was initialized successfully, or an error if the initialization failed.
 pub fn initialize_db(conn: &Connection) -> Result<()> {
     conn.execute(
         "CREATE TABLE IF NOT EXISTS transactions_history (\n            tx_id TEXT NOT NULL,\n            version INTEGER NOT NULL,\n            person TEXT NOT NULL,\n            date TEXT NOT NULL,\n            data TEXT NOT NULL,\n            op TEXT NOT NULL,\n            created_at TEXT NOT NULL,\n            PRIMARY KEY (tx_id, version)\n        )",
@@ -144,6 +201,17 @@ pub fn initialize_db(conn: &Connection) -> Result<()> {
     Ok(())
 }
 
+/// Opens an encrypted database.
+///
+/// # Arguments
+///
+/// * `db_path` - The path to the database file.
+/// * `key` - The encryption key.
+/// * `check_table` - Whether to check for the existence of the `transactions_history` table.
+///
+/// # Returns
+///
+/// Returns a database connection if the database was opened successfully, or an error if the database failed to open.
 pub fn open_encrypted_db(
     db_path: &str,
     key: &mut EncryptionKey,
