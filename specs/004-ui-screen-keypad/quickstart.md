@@ -1,58 +1,50 @@
 # Quickstart: Keypad UI Screen
 
-**Date**: 2025-10-21
+**Branch**: `004-ui-screen-keypad` | **Date**: 2025-10-21 | **Spec**: [./spec.md](./spec.md)
 
-This document provides instructions on how to run and test the new Keypad UI screen.
+This guide provides instructions on how to run and test the new Keypad UI screen.
 
 ## Prerequisites
 
-- Android Studio installed and configured.
+- Android Studio installed.
 - An Android emulator or a physical device connected.
 
 ## Running the Keypad Screen
 
-Since the Keypad screen is being developed in isolation, you need to temporarily change the application's entry point to launch this screen directly.
+To test the Keypad screen in isolation, the main entry point of the application needs to be temporarily modified.
 
 1.  **Open the project** in Android Studio.
-2.  **Navigate** to `android/app/src/main/java/com/example/ledger/ui/MainActivity.kt`.
-3.  **Modify the `setContent` block** in the `MainActivity` class to call the `KeypadScreen` composable instead of the main navigation graph.
 
-    **From (example):**
+2.  **Navigate to the `MainActivity.kt` file** located at `android/app/src/main/java/com/example/ledger/ui/MainActivity.kt`.
+
+3.  **Modify the `setContent` block** to launch the `KeypadScreen` directly. You can comment out the existing navigation setup.
+
     ```kotlin
-    setContent {
-        LedgerTheme {
-            Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                AppNavigation()
+    class MainActivity : ComponentActivity() {
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            setContent {
+                LedgerTheme {
+                    // Comment out the existing NavHost and related code
+                    // NavHost(...) { ... }
+
+                    // Add the KeypadScreen directly
+                    KeypadScreen()
+                }
             }
         }
     }
     ```
 
-    **To:**
-    ```kotlin
-    setContent {
-        KeypadTheme(theme = KeypadTheme.GREEN) { // Or KeypadTheme.RED
-            Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                KeypadScreen()
-            }
-        }
-    }
-    ```
+4.  **Run the app** on your emulator or device. The Keypad screen should be the first screen you see.
 
-4.  **Build and run** the application on your emulator or device. The Keypad screen should appear on launch.
+## Switching Themes
 
-## Running Tests
+To test the different themes (green and red), you can pass the desired theme as a parameter to the `KeypadScreen` composable.
 
-Instrumented tests for the Keypad screen are located in `androidTest/java/com/example/ledger/ui/keypad/KeypadScreenTest.kt`.
-
-To run the tests:
-
-1.  **Right-click** on the `KeypadScreenTest.kt` file in the Project view.
-2.  **Select "Run 'KeypadScreenTest'"** from the context menu.
-
-Alternatively, you can run all Android tests from the command line using Gradle:
-
-```bash
-cd android
-./gradlew connectedAndroidTest
+```kotlin
+// In MainActivity.kt
+KeypadScreen(theme = KeypadTheme.RED)
 ```
+
+This allows you to easily switch between the themes for visual verification against the design mockups.

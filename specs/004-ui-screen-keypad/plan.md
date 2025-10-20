@@ -9,8 +9,8 @@ This plan outlines the implementation of a new Keypad UI screen for the Android 
 
 ## Technical Context
 
-**Language/Version**: Kotlin [NEEDS CLARIFICATION: Version to be determined from build files]
-**Primary Dependencies**: Jetpack Compose [NEEDS CLARIFICATION: Version to be determined from build files], Material Design
+**Language/Version**: Kotlin 1.9.22
+**Primary Dependencies**: Jetpack Compose (BOM 2023.08.00, Compiler Extension 1.5.10), Material Design
 **Storage**: N/A (UI state is transient)
 **Testing**: Android Instrumented Tests (Espresso), JUnit
 **Target Platform**: Android

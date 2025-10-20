@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.example.ledger.ffi.LedgerRepository
 import com.example.ledger.security.KeyManager
+import com.example.ledger.ui.keypad.KeypadScreen
 import com.example.ledger.viewmodel.BalanceViewModel
 import com.example.ledger.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
@@ -37,12 +38,12 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            com.example.ledger.ui.keypad.theme.KeypadTheme(theme = com.example.ledger.ui.keypad.theme.KeypadTheme.GREEN) { // Or KeypadTheme.RED
+            MaterialTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    com.example.ledger.ui.keypad.KeypadScreen()
+                    KeypadScreen()
                 }
             }
         }

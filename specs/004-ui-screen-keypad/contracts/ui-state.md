@@ -1,50 +1,56 @@
-# UI State Contract: Keypad Screen
+# UI State Contract: KeypadScreen
 
-**Date**: 2025-10-21
+**Branch**: `004-ui-screen-keypad` | **Date**: 2025-10-21 | **Spec**: [./spec.md](./spec.md)
 
-This document defines the contract for the UI state of the Keypad screen. The state is managed by a `KeypadViewModel` and exposed to the `KeypadScreen` composable.
+This document defines the contract for the UI state of the Keypad screen. The state will be managed by a `KeypadViewModel` and exposed to the `KeypadScreen` composable.
 
-## State Object: `KeypadState`
+## State Holder: `KeypadViewModel`
 
-The `KeypadState` is a data class that represents all the information needed to render the UI at any given time.
-
-```kotlin
-data class KeypadState(
-    val displayedValue: String = "0",
-    val theme: KeypadTheme = KeypadTheme.GREEN
-)
-
-enum class KeypadTheme {
-    GREEN,
-    RED
-}
-```
-
-### Properties
-
-- `displayedValue: String`
-  - **Description**: The string representation of the number entered by the user.
-  - **Default**: `"0"`
-
-- `theme: KeypadTheme`
-  - **Description**: An enum that determines the color scheme of the UI.
-  - **Default**: `KeypadTheme.GREEN`
-
-## ViewModel Interface
-
-The `KeypadViewModel` will expose the `KeypadState` and handle user input events.
+The `KeypadViewModel` will be responsible for holding and processing the keypad state.
 
 ```kotlin
 class KeypadViewModel : ViewModel() {
 
-    // Exposes the UI state to the composable
-    val uiState: StateFlow<KeypadState> = // ...
+    private val _uiState = MutableStateFlow(KeypadState())
+    val uiState: StateFlow<KeypadState> = _uiState.asStateFlow()
 
-    // Functions to handle user actions
-    fun onNumberPress(number: Int) { /* ... */ }
-    fun onDecimalPress() { /* ... */ }
-    fun onBackspacePress() { /* ... */ }
-    fun onClear() { /* ... */ }
-    fun setTheme(theme: KeypadTheme) { /* ... */ }
+    fun onEvent(event: KeypadEvent) {
+        // Handle events and update state
+    }
+}
+```
+
+## State Data Class: `KeypadState`
+
+The `KeypadState` data class represents the state of the UI.
+
+```kotlin
+data class KeypadState(
+    val displayText: String = "0",
+    val theme: KeypadTheme = KeypadTheme.GREEN
+)
+```
+
+## UI Events: `KeypadEvent`
+
+A sealed class will be used to represent all possible user interactions (events) on the keypad screen.
+
+```kotlin
+sealed class KeypadEvent {
+    data class Number(val number: Int) : KeypadEvent()
+    object Decimal : KeypadEvent()
+    object Backspace : KeypadEvent()
+    object Clear : KeypadEvent()
+}
+```
+
+## Theme: `KeypadTheme`
+
+An enum will define the possible themes.
+
+```kotlin
+enum class KeypadTheme {
+    GREEN,
+    RED
 }
 ```

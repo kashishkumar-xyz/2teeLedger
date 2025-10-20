@@ -1,37 +1,60 @@
 # Research: Keypad UI Screen
 
-**Date**: 2025-10-21
+**Branch**: `004-ui-screen-keypad` | **Date**: 2025-10-21 | **Spec**: [./spec.md](./spec.md)
 
-This document summarizes the research conducted to resolve the `NEEDS CLARIFICATION` markers in the implementation plan.
+## Research Tasks
 
-## 1. Technology Versions
+This research phase focuses on gathering the necessary information to build a responsive, scalable, and maintainable Keypad UI screen in Jetpack Compose.
 
-**Task**: Inspect `android/build.gradle.kts` and `android/app/build.gradle.kts` to determine the versions of Kotlin and Jetpack Compose.
+### 1. State Management in Jetpack Compose
 
-**Decision**:
-- **Kotlin Version**: `1.9.22`
-- **Jetpack Compose BOM**: `2023.08.00`
-- **Jetpack Compose Compiler Extension**: `1.5.10`
+**Task**: Investigate best practices for state management in Jetpack Compose, specifically for a feature like a keypad where the UI state is simple but needs to be handled efficiently.
 
-**Rationale**: These versions are explicitly defined in the project's Gradle build files (`android/build.gradle.kts` and `android/app/build.gradle.kts`). Adhering to these versions ensures compatibility with the existing codebase.
+**Findings**:
 
-**Alternatives considered**: None. The project has established versions.
+- **Decision**: Use a `ViewModel` to hold the state of the keypad screen. The state will be exposed to the UI using `StateFlow` or `MutableState`.
+- **Rationale**: A `ViewModel` is the standard Android-recommended way to handle UI-related data that survives configuration changes. Using `StateFlow` allows the UI to reactively observe state changes and recompose efficiently. This approach separates the state logic from the UI, making the code cleaner and easier to test.
+- **Alternatives considered**:
+    - Using `remember` and `mutableStateOf` directly in the Composable: This is suitable for simple, internal state of a Composable, but for screen-level state that needs to be preserved, a `ViewModel` is better.
+    - Using a third-party state management library: Overkill for the simple state of the keypad screen.
 
-## 2. Dynamic Theming in Jetpack Compose
+### 2. Responsive Layouts and Adaptive Sizing
 
-**Task**: Research best practices for creating and applying custom color schemes in Jetpack Compose for dynamic theming.
+**Task**: Research techniques for creating responsive layouts and adaptive component sizing in Jetpack Compose to ensure the keypad looks good on different screen sizes and orientations.
 
-**Decision**: The implementation will use Jetpack Compose's `MaterialTheme` to create a custom, dynamic theme for the keypad.
+**Findings**:
 
-**Rationale**: This approach is the standard and recommended way to handle theming in Jetpack Compose. It provides a structured and maintainable way to manage colors, typography, and shapes.
+- **Decision**:
+    - Use `BoxWithConstraints` to get the available screen space and make decisions about the layout.
+    - Use `Modifier.weight()` within `Row` and `Column` to create flexible layouts where components share space proportionally.
+    - Use `Layout` composable for more complex custom layouts if needed.
+    - Define dimensions in `dp` but also consider using `dimens.xml` for different screen sizes if necessary.
+- **Rationale**: These are the standard Jetpack Compose APIs for building adaptive UIs. `BoxWithConstraints` provides the flexibility to adapt the layout based on the available space, while `weight` is perfect for distributing space among the keypad buttons.
+- **Alternatives considered**:
+    - Creating different layouts for different screen sizes: This is a more traditional approach but less flexible than using Compose's adaptive APIs.
 
-The implementation will involve:
-1.  **Creating a `Color.kt` file**: This file will define the specific color palettes for the "green" (income) and "red" (expense) themes.
-2.  **Creating a `Theme.kt` file**: This file will contain a custom composable function (e.g., `KeypadTheme`) that wraps `MaterialTheme`. This function will accept a parameter to determine which color scheme (`green` or `red`) to apply.
-3.  **Using `ColorScheme`**: The `KeypadTheme` composable will pass the appropriate `ColorScheme` object to the `MaterialTheme` based on the input parameter.
+### 3. Review of `KeypadScreen.kt`
 
-This approach allows for easy switching between themes and encapsulates the theming logic in a reusable and organized manner.
+**Task**: Analyze the provided `KeypadScreen.kt` to understand the UI components, styling, and overall visual structure.
 
-**Alternatives considered**:
-- **Hardcoding colors**: This was rejected as it leads to an unmaintainable and inconsistent UI. It violates the principle of separation of concerns.
-- **Using multiple `MaterialTheme` wrappers**: This was considered but deemed overly complex for this use case. A single, dynamic theme is more efficient.
+**Findings**:
+
+- The file provides a good visual representation of the keypad.
+- It uses `MaterialTheme` and custom colors.
+- The layout is static and does not adapt to different screen sizes.
+- The buttons are hardcoded.
+- State management is not implemented.
+
+### 4. Review of `kbscreen.bk`
+
+**Task**: Examine the `kbscreen.bk` file to extract the core logic for input handling and dynamic layout generation.
+
+**Findings**:
+
+- The file contains the logic for handling user input (number presses, backspace, etc.).
+- It has a dynamic layout that can be adapted.
+- The state management is basic and can be improved with a `ViewModel`.
+
+## Conclusion
+
+The research confirms that combining the UI from `KeypadScreen.kt` with the logic from `kbscreen.bk` is feasible. The new implementation will use a `ViewModel` for state management and Jetpack Compose's adaptive layout features to create a responsive and scalable keypad screen.

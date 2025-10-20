@@ -40,10 +40,10 @@ As a user, I want the keypad to appear in different color schemes (green or red)
 
 ### Edge Cases
 
-- What happens when the user enters a number longer than the display can show? The display should scroll horizontally, or the font size should decrease to accommodate the number.
+- What happens when the user enters a number longer than the display can show? The display should scroll horizontally to accommodate the number.
 - What happens if the user tries to enter more than one decimal point? The keypad should prevent the entry of a second decimal point.
-- How does the UI respond to screen rotation? The layout should adapt to both portrait and landscape orientations without losing user input.
-- What is the behavior of the backspace/clear button? A short press should delete the last digit, while a long press should clear the entire display.
+- How does the UI respond to screen rotation? The screen should be locked to portrait orientation to prevent rotation.
+- What is the behavior of the backspace/clear button? A short press should delete the last digit, while a long press (500ms) should clear the entire display.
 
 ## Requirements *(mandatory)*
 

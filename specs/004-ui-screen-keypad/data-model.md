@@ -1,33 +1,31 @@
-# Data Model: Keypad UI
+# Data Model: Keypad UI Screen
 
-**Date**: 2025-10-21
+**Branch**: `004-ui-screen-keypad` | **Date**: 2025-10-21 | **Spec**: [./spec.md](./spec.md)
 
-This document outlines the data model for the Keypad UI feature. As this is a UI-only feature, the data model represents the transient state of the UI, managed within a ViewModel.
+This document describes the data entities for the Keypad UI screen feature. As this is a UI-only feature with transient state, the data model is simple and does not involve any persistent storage.
 
-## Entities
+## Key Entities
 
-### KeypadState
+### 1. `KeypadState`
 
-Represents the complete state of the keypad screen at any given moment.
+Represents the complete state of the keypad screen at any given moment. This state is managed by the `KeypadViewModel` and observed by the `KeypadScreen` composable.
 
 **Fields**:
 
-- `displayedValue: String`
-  - **Description**: The numerical string currently displayed on the screen. This value is built from the user's input.
-  - **Validation**: Can contain digits (0-9) and at most one decimal point.
-  - **Initial State**: "0"
+- `displayText: String`
+  - **Description**: The current string of numbers displayed on the screen. This is the value being built by the user's input.
+  - **Type**: `String`
+  - **Initial Value**: `"0"`
+  - **Constraints**: Can only contain numeric characters and at most one decimal point.
 
 - `theme: KeypadTheme`
-  - **Description**: An enumeration representing the current visual theme of the keypad.
-  - **Values**: `GREEN`, `RED`
-  - **Initial State**: `GREEN` (or as configured on launch)
+  - **Description**: An enum or sealed class that defines the current visual theme of the keypad.
+  - **Type**: `KeypadTheme` (e.g., `GREEN`, `RED`)
+  - **Initial Value**: `GREEN` (or as configured on launch)
 
-## State Transitions
+**State Transitions**:
 
-The `KeypadState` is updated by the `KeypadViewModel` in response to user actions:
-
-- **User taps a number button**: The corresponding digit is appended to `displayedValue`.
-- **User taps the decimal button**: A `.` is appended to `displayedValue` if it does not already contain one.
-- **User taps the backspace button**: The last character is removed from `displayedValue`.
-- **User long-presses the backspace button**: `displayedValue` is reset to "0".
-- **Theme is toggled**: The `theme` value is updated, causing the UI to recompose with the new color scheme.
+- **Append Digit**: When a number button is pressed, the corresponding digit is appended to `displayText`.
+- **Delete Digit**: When the backspace button is pressed, the last character of `displayText` is removed.
+- **Clear Display**: When the clear button is long-pressed, `displayText` is reset to `"0"`.
+- **Toggle Theme**: The theme can be changed based on the context of the transaction (e.g., income vs. expense).

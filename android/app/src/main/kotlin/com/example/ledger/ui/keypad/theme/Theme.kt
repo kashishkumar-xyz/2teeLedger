@@ -1,39 +1,40 @@
 package com.example.ledger.ui.keypad.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.Typography
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import com.example.ledger.ui.keypad.KeypadTheme
 
-private val DarkGreenColorScheme = darkColorScheme(
-    primary = CustomGreen,
-    background = ForensicDark,
-    surface = ForensicLight
+private val LightGreenColorScheme = lightColorScheme(
+    primary = Green,
+    secondary = Green,
+    tertiary = Green
 )
 
-private val DarkRedColorScheme = darkColorScheme(
+private val LightRedColorScheme = lightColorScheme(
     primary = Red,
-    background = ForensicDark,
-    surface = ForensicLight
+    secondary = Red,
+    tertiary = Red
 )
+
+val Typography = Typography()
 
 @Composable
-fun KeypadTheme(
+fun LedgerTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
     theme: KeypadTheme = KeypadTheme.GREEN,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when (theme) {
-        KeypadTheme.GREEN -> DarkGreenColorScheme
-        KeypadTheme.RED -> DarkRedColorScheme
+        KeypadTheme.GREEN -> LightGreenColorScheme
+        KeypadTheme.RED -> LightRedColorScheme
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = MaterialTheme.typography,
+        typography = Typography,
         content = content
     )
-}
-
-enum class KeypadTheme {
-    GREEN,
-    RED
 }
