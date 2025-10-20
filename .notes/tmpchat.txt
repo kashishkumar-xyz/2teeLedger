@@ -1,4 +1,4 @@
-/speckit.specify 001-keypad-screen
+/speckit.specify ui_screen:keypad
 
   explanation of what the screen should look like: @UI-docs/UI_layout.md 
 
@@ -10,11 +10,14 @@
   @UI-docs/designs/screens/keypad_green/gr.html 
   @UI-docs/designs/screens/keypad_red/re.html 
 
-  pre-existing android frontend which needs to be changed can be found here:
+  pre-existing android frontend where this new screen will be created is in the following directory: 
   @app/src/main/java/com/example/ledger/ui/ 
 
 
   this new screen we are specifying will replace the following screen in our new UI:
   @app/src/main/java/com/example/ledger/ui/AddTransactionScreen.kt
 
-  update the existing spec using above instructions
+  for now lets make it a dummy UI, where we just implement the graphical UI, it shouldnt try to fetch or interact with our rust backend just yet. the only data the UI should handle is the one it receives directly from user interaction such as the keypad inputs etc. 
+
+    To ensure we dont break any pre-existing code, lets build the new keypad screen completely independant of the existing screens, we will just edit the entry point of our app to point to this new screen for testing the UI
+
