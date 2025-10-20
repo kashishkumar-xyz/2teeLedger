@@ -1,0 +1,20 @@
+/speckit.specify 001-keypad-screen
+
+  explanation of what the screen should look like: @UI-docs/UI_layout.md 
+
+  pictures of what i expect final output to look like:
+  @UI-docs/designs/screens/keypad_green/gr.png 
+  @UI-docs/designs/screens/keypad_red/re.png 
+
+  HTML designs that will act as guiding path for our android implementation of them:
+  @UI-docs/designs/screens/keypad_green/gr.html 
+  @UI-docs/designs/screens/keypad_red/re.html 
+
+  pre-existing android frontend which needs to be changed can be found here:
+  @app/src/main/java/com/example/ledger/ui/ 
+
+
+  this new screen we are specifying will replace the following screen in our new UI:
+  @app/src/main/java/com/example/ledger/ui/AddTransactionScreen.kt
+
+  update the existing spec using above instructions

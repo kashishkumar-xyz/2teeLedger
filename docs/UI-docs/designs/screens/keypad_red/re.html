@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Stitch Design</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#39E079",
+            "background-light": "#f6f8f7",
+            "background-dark": "#122017",
+            "forensic-red": "#8B0000",
+            "forensic-dark": "#0A0A0A",
+            "forensic-light": "#1A1A1A",
+            "custom-green": "#39E079",
+          },
+          fontFamily: {
+            display: "Manrope",
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px",
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    .group.negative .text-primary,
+    .group.negative .border-primary {
+      color: var(--forensic-red) !important;
+      border-color: var(--forensic-red) !important;
+    }
+
+    .group.negative .bg-primary\/10 {
+      background-color: rgba(139, 0, 0, 0.1) !important;
+    }
+
+    .group.negative .bg-primary {
+      background-color: var(--forensic-red) !important;
+    }
+
+    .group.negative .text-on-primary {
+      color: #fff !important;
+    }
+
+    .group.positive .border-primary {
+      border-color: #38e07b !important;
+    }
+
+    .group.positive .bg-primary\/10 {
+      background-color: rgba(56, 224, 123, 0.1) !important;
+    }
+
+    body {
+      min-height: max(884px, 100dvh);
+      background-color: var(--forensic-dark);
+      color: #e0e0e0;
+    }
+
+    .keypad-grid {
+      background-image: linear-gradient(to right,
+          rgba(255, 255, 255, 0.05) 1px,
+          transparent 1px),
+        linear-gradient(to bottom,
+          rgba(255, 255, 255, 0.05) 1px,
+          transparent 1px);
+      background-size: 20px 20px;
+    }
+  </style>
+  <style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  <style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  <style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  <style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+
+<body class="bg-forensic-dark font-display text-gray-200">
+  <div class="relative flex h-screen min-h-screen w-full flex-col group negative">
+    <header class="flex-shrink-0">
+      <div class="flex items-center justify-between p-4">
+        <div class="w-12"></div>
+        <div class="flex w-12 items-center justify-end">
+          <button
+            class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-transparent text-gray-400">
+            <span class="material-symbols-outlined text-2xl">settings</span>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main class="flex flex-1 flex-col justify-evenly px-4 pb-2">
+      <div class="flex flex-col items-center gap-4">
+        <div class="relative w-full">
+          <div
+            class="w-full h-auto rounded-xl border-none bg-transparent text-center text-7xl font-bold text-primary focus:outline-none focus:ring-0">
+            <span class="text-forensic-red">$</span><span class="text-forensic-red/90">0</span>
+          </div>
+        </div>
+        <div class="flex flex-col w-full gap-2 mt-4 text-sm px-2">
+          <div class="flex justify-between items-center bg-forensic-light/50 px-3 py-2 rounded-lg">
+            <span class="text-gray-400">Add note</span>
+            <span class="text-white/50 font-medium">Add details...</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col keypad-grid p-4 rounded-xl">
+        <div class="grid grid-cols-3 gap-4">
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-3xl font-bold text-white shadow-lg border border-forensic-red/20">
+            1
+          </button>
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-3xl font-bold text-white shadow-lg border border-forensic-red/20">
+            2
+          </button>
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-3xl font-bold text-white shadow-lg border border-forensic-red/20">
+            3
+          </button>
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-3xl font-bold text-white shadow-lg border border-forensic-red/20">
+            4
+          </button>
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-3xl font-bold text-white shadow-lg border border-forensic-red/20">
+            5
+          </button>
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-3xl font-bold text-white shadow-lg border border-forensic-red/20">
+            6
+          </button>
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-3xl font-bold text-white shadow-lg border border-forensic-red/20">
+            7
+          </button>
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-3xl font-bold text-white shadow-lg border border-forensic-red/20">
+            8
+          </button>
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-3xl font-bold text-white shadow-lg border border-forensic-red/20">
+            9
+          </button>
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-xl font-bold text-white shadow-lg border border-forensic-red/20">
+            C
+          </button>
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-3xl font-bold text-white shadow-lg border border-forensic-red/20">
+            0
+          </button>
+          <button
+            class="flex h-20 items-center justify-center rounded-full bg-forensic-light text-xl font-bold text-white shadow-lg border border-forensic-red/20">
+            <span class="material-symbols-outlined text-3xl">backspace</span>
+          </button>
+        </div>
+        <div class="mt-4 flex items-center justify-center gap-2">
+          <button
+            class="group/op flex-1 rounded-xl py-4 text-center text-lg font-bold bg-forensic-light text-white data-[active=true]:border-2 data-[active=true]:border-forensic-red"
+            data-active="true"
+            onclick="document.querySelector('.group').classList.remove('positive'); document.querySelector('.group').classList.add('negative'); this.setAttribute('data-active', 'true'); this.nextElementSibling.setAttribute('data-active', 'true'); this.nextElementSibling.nextElementSibling.setAttribute('data-active', 'false')">
+            -
+          </button>
+          <button
+            class="group/op flex-1 rounded-xl py-4 text-center text-lg font-bold bg-forensic-red text-white data-[active=true]:border-2 data-[active=true]:border-forensic-red"
+            data-active="true"
+            onclick="this.setAttribute('data-active', 'true'); this.previousElementSibling.setAttribute('data-active', 'true'); this.nextElementSibling.setAttribute('data-active', 'false')">
+            >
+          </button>
+          <button
+            class="group/op flex-1 rounded-xl py-4 text-center text-lg font-bold bg-forensic-light text-white data-[active=true]:border-2 data-[active=true]:border-forensic-red"
+            onclick="document.querySelector('.group').classList.remove('negative'); document.querySelector('.group').classList.add('positive'); this.setAttribute('data-active', 'true'); this.previousElementSibling.setAttribute('data-active', 'false'); this.previousElementSibling.previousElementSibling.setAttribute('data-active', 'false')">
+            +
+          </button>
+        </div>
+      </div>
+    </main>
+    <footer class="flex-shrink-0 border-t border-gray-700 bg-forensic-dark">
+      <nav class="flex justify-around px-4 pt-2 pb-5">
+        <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 transition-colors" href="#">
+          <span class="material-symbols-outlined">history</span>
+          <span class="text-xs font-medium">Recents</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-forensic-red hover:text-forensic-red/80 transition-colors"
+          href="#">
+          <span class="material-symbols-outlined">dialpad</span>
+          <span class="text-xs font-medium">Keypad</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 transition-colors" href="#">
+          <span class="material-symbols-outlined">person</span>
+          <span class="text-xs font-medium">Accounts</span>
+        </a>
+      </nav>
+    </footer>
+  </div>
+</body>
+
+</html>

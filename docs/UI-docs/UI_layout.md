@@ -4,12 +4,13 @@
   1. screen title
   2. user-input render display
   3. keypad
-  4. operations bar 
+  4. operations bar
   5. navbar
 
-* use of state and mode has been done interchangibly in this document, both imply the same underlying concept, but change depending on the object its being used with. mode usually describes the apps context, while state describes the visual appearence the app takes on depending on the mode
+- use of state and mode has been done interchangibly in this document, both imply the same underlying concept, but change depending on the object its being used with. mode usually describes the apps context, while state describes the visual appearence the app takes on depending on the mode
 
 ### keypad layout
+
 - 12 total buttons in the below order
 
 ```
@@ -23,7 +24,8 @@
 . 󰭜 : backpace
 
 ### operations bar
-- has 3 buttons 
+
+- has 3 buttons
   1. negative operation mode
   2. sumbit amount
   3. positive operation mode
@@ -32,7 +34,7 @@
 |[-] [>] [+]|
 ```
 
-- the operation bar can be in 2 distinct states which would dictate its visual apperance. 
+- the operation bar can be in 2 distinct states which would dictate its visual apperance.
       - green state (*default)    : when in positive mode
       - red state                 :  when in negative mode
   - the state operation bar is in depends on the *operation-mode* app is in
@@ -54,14 +56,16 @@
   - red --> negative mode
 
 ### navbar
+
 - 3 buttons each when clicked navigates to its corresponding Screen
       1. recents 󰋚
       2. keypad (default)
       3. accounts 󰖸
 
 #### additional notes for the UI designer
+
 - the textual representations provided in this document are only for your conceptual understanding. pls dont use them literally in your designs, i dont want [] (brackets)  or ... as they are presented here!
 
 - the app will be dark themed, choose a color and shade pallette based on this, make sure the shade of green and red you choose are in  a good contrast ratio with the dark background
 
-- the navbar shouldnt be affected by the state or mode 
+- the navbar shouldnt be affected by the state or mode
