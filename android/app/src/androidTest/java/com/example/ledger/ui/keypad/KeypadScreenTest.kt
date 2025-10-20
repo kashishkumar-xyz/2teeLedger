@@ -3,11 +3,12 @@ package com.example.ledger.ui.keypad
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.longClick
 import com.example.ledger.ui.keypad.theme.KeypadTheme
 import org.junit.Rule
 import org.junit.Test
@@ -63,23 +64,21 @@ class KeypadScreenTest {
 
     @Test
     fun whenThemeIsGreen_thenGreenContentDescriptionExists() {
+        val viewModel = KeypadViewModel()
         composeTestRule.setContent {
-            KeypadTheme(theme = com.example.ledger.ui.keypad.theme.KeypadTheme.GREEN) {
-                KeypadScreen()
-            }
+            KeypadScreen(viewModel = viewModel)
         }
-
+        viewModel.setTheme(KeypadTheme.GREEN)
         composeTestRule.onNodeWithContentDescription("Keypad Screen GREEN").assertExists()
     }
 
     @Test
     fun whenThemeIsRed_thenRedContentDescriptionExists() {
+        val viewModel = KeypadViewModel()
         composeTestRule.setContent {
-            KeypadTheme(theme = com.example.ledger.ui.keypad.theme.KeypadTheme.RED) {
-                KeypadScreen()
-            }
+            KeypadScreen(viewModel = viewModel)
         }
-
+        viewModel.setTheme(KeypadTheme.RED)
         composeTestRule.onNodeWithContentDescription("Keypad Screen RED").assertExists()
     }
 }

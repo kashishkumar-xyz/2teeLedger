@@ -32,4 +32,8 @@ class KeypadViewModel : ViewModel() {
     fun onClear() {
         _uiState.value = _uiState.value.copy(displayedValue = "0")
     }
+
+    fun setTheme(theme: KeypadTheme) {
+        _uiState.value = _uiState.value.copy(theme = theme)
+    }
 }

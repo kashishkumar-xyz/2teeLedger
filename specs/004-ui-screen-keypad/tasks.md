@@ -67,13 +67,13 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T014 [P] [US2] In `KeypadScreenTest.kt`, write a test to verify the UI uses the green color scheme when the theme is set to `GREEN`.
-- [ ] T015 [P] [US2] In `KeypadScreenTest.kt`, write a test to verify the UI uses the red color scheme when the theme is set to `RED`.
+- [x] T014 [P] [US2] In `KeypadScreenTest.kt`, write a test to verify the UI uses the green color scheme when the theme is set to `GREEN`.
+- [x] T015 [P] [US2] In `KeypadScreenTest.kt`, write a test to verify the UI uses the red color scheme when the theme is set to `RED`.
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] In `KeypadViewModel.kt`, implement a method to allow setting the `KeypadTheme` in the `KeypadState`.
-- [ ] T017 [US2] In `KeypadScreen.kt`, apply the `KeypadTheme` from the `KeypadState` to the UI elements.
+- [x] T016 [US2] In `KeypadViewModel.kt`, implement a method to allow setting the `KeypadTheme` in the `KeypadState`.
+- [x] T017 [US2] In `KeypadScreen.kt`, apply the `KeypadTheme` from the `KeypadState` to the UI elements.
 
 **Checkpoint**: User Stories 1 AND 2 should both work independently.
 
@@ -83,9 +83,9 @@
 
 **Purpose**: Final integration, cleanup, and validation.
 
-- [ ] T018 Modify `android/app/src/main/java/com/example/ledger/ui/MainActivity.kt` to launch the `KeypadScreen` as per the `quickstart.md` for manual testing.
-- [ ] T019 Run all tests and ensure they pass.
-- [ ] T020 Perform a final code review and refactor for clarity and performance.
+- [x] T018 Modify `android/app/src/main/java/com/example/ledger/ui/MainActivity.kt` to launch the `KeypadScreen` as per the `quickstart.md` for manual testing.
+- [x] T019 Run all tests and ensure they pass.
+- [x] T020 Perform a final code review and refactor for clarity and performance.
 
 ---
 

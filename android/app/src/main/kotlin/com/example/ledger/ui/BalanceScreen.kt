@@ -60,7 +60,7 @@ fun BalanceScreen(
                     Text(text = error!!, color = Color.Red)
                 }
             } else if (balances.isEmpty()) {
-                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(text = "No balances found.")
                 }
             } else {

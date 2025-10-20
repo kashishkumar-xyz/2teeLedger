@@ -58,7 +58,11 @@ class TransactionHistoryViewModelTest {
         // Given
         val person = "Alice"
         val errorMessage = "Database error"
-        whenever(ledgerRepository.getTransactionsForPerson(person)).thenThrow(RuntimeException(errorMessage))
+        whenever(ledgerRepository.getTransactionsForPerson(person)).thenThrow(
+            RuntimeException(
+                errorMessage
+            )
+        )
 
         // When
         viewModel.loadTransactionHistory(person)

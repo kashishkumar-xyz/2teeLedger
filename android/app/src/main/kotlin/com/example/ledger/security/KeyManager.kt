@@ -37,7 +37,10 @@ class KeyManager(context: Context) {
                 (0 until 32).forEach { this[it] = it.toByte() }
             }
             val encryptedDbKey = encrypt(newDbKey)
-            prefs.edit().putString(ENCRYPTED_DB_KEY_PREF, Base64.encodeToString(encryptedDbKey, Base64.NO_WRAP)).apply()
+            prefs.edit().putString(
+                ENCRYPTED_DB_KEY_PREF,
+                Base64.encodeToString(encryptedDbKey, Base64.NO_WRAP)
+            ).apply()
             newDbKey
         } else {
             // Subsequent runs: decrypt the saved database key
@@ -47,7 +50,8 @@ class KeyManager(context: Context) {
     }
 
     private fun generateMasterEncryptionKey() {
-        val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
+        val keyGenerator =
+            KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
         val keyGenParameterSpec = KeyGenParameterSpec.Builder(
             KEY_ALIAS,
             KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT

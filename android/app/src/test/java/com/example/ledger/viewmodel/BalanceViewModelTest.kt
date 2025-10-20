@@ -87,7 +87,13 @@ class BalanceViewModelTest {
     fun `saveTransaction handles error`() = runTest {
         // Given
         val errorMessage = "Failed to save"
-        whenever(ledgerRepository.addTransaction("Alice", 50.0, "Lunch")).thenThrow(RuntimeException(errorMessage))
+        whenever(
+            ledgerRepository.addTransaction(
+                "Alice",
+                50.0,
+                "Lunch"
+            )
+        ).thenThrow(RuntimeException(errorMessage))
         viewModel = BalanceViewModel(ledgerRepository)
 
         // When

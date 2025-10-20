@@ -6,8 +6,6 @@ import com.example.ledger.model.Balance
 import com.example.ledger.model.Transaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.crypto.SecretKey
-import com.sun.jna.Native
 
 class LedgerRepository(private val context: Context) {
 
@@ -28,7 +26,8 @@ class LedgerRepository(private val context: Context) {
             // 1. Open the database
             val openResult = ledgerApi.open_database(dbPath, passphrase)
             if (openResult != 0) {
-                val error = ledgerApi.get_last_error()?.getString(0) ?: "Unknown error opening database"
+                val error =
+                    ledgerApi.get_last_error()?.getString(0) ?: "Unknown error opening database"
                 ledgerApi.free_string(ledgerApi.get_last_error())
                 throw Exception("Failed to open database: $error")
             }
@@ -37,7 +36,8 @@ class LedgerRepository(private val context: Context) {
             //    The Rust side should handle this idempotently (e.g., CREATE TABLE IF NOT EXISTS).
             val initResult = ledgerApi.init_database()
             if (initResult != 0) {
-                val error = ledgerApi.get_last_error()?.getString(0) ?: "Unknown error initializing database"
+                val error = ledgerApi.get_last_error()?.getString(0)
+                    ?: "Unknown error initializing database"
                 ledgerApi.free_string(ledgerApi.get_last_error())
                 throw Exception("Failed to initialize database: $error")
             }
