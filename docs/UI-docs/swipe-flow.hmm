@@ -1,0 +1,9 @@
+default
+	swipe
+		.
+			right->
+				@str: name_search
+		.
+			<- left
+				#num: negative-
+
