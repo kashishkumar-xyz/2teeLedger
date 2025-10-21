@@ -122,10 +122,11 @@ fi
 # Build list of available documents
 docs=()
 
-# Always check these optional docs
-[[ -f "$RESEARCH" ]] && docs+=("research.md")
-[[ -f "$DATA_MODEL" ]] && docs+=("data-model.md")
-
+    # Always check these optional docs
+    [[ -f "$FEATURE_SPEC" ]] && docs+=("spec.md")
+    [[ -f "$IMPL_PLAN" ]] && docs+=("plan.md")
+    [[ -f "$RESEARCH" ]] && docs+=("research.md")
+    [[ -f "$DATA_MODEL" ]] && docs+=("data-model.md")
 # Check contracts directory (only if it exists and has files)
 if [[ -d "$CONTRACTS_DIR" ]] && [[ -n "$(ls -A "$CONTRACTS_DIR" 2>/dev/null)" ]]; then
     docs+=("contracts/")

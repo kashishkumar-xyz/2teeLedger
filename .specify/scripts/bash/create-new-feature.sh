@@ -3,18 +3,33 @@
 set -e
 
 JSON_MODE=false
-ARGS=()
-for arg in "$@"; do
-    case "$arg" in
-        --json) JSON_MODE=true ;;
-        --help|-h) echo "Usage: $0 [--json] <feature_description>"; exit 0 ;;
-        *) ARGS+=("$arg") ;;
+FILE_MODE=false
+FEATURE_FILE=""
+TEMP_ARGS=()
+
+while (( "$#" )); do
+    case "$1" in
+        --json) JSON_MODE=true; shift ;;
+        --file) FILE_MODE=true; FEATURE_FILE="$2"; shift 2 ;;
+        --help|-h) echo "Usage: $0 [--json] [--file <path>] <feature_description>"; exit 0 ;;
+        *) TEMP_ARGS+=("$1"); shift ;;
     esac
 done
+ARGS=("${TEMP_ARGS[@]}")
 
-FEATURE_DESCRIPTION="${ARGS[*]}"
+if [ "$FILE_MODE" = true ]; then
+    if [ -f "$FEATURE_FILE" ]; then
+        FEATURE_DESCRIPTION=$(cat "$FEATURE_FILE")
+    else
+        echo "Error: Feature description file not found: $FEATURE_FILE" >&2
+        exit 1
+    fi
+else
+    FEATURE_DESCRIPTION="${ARGS[*]}"
+fi
+
 if [ -z "$FEATURE_DESCRIPTION" ]; then
-    echo "Usage: $0 [--json] <feature_description>" >&2
+    echo "Usage: $0 [--json] [--file <path>] <feature_description>" >&2
     exit 1
 fi
 

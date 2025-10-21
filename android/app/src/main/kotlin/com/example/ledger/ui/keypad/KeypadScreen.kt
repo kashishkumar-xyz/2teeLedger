@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -229,7 +230,19 @@ private fun Keypad(onEvent: (KeypadEvent) -> Unit, theme: KeypadTheme) {
         val buttonSize: Dp = (maxWidth / 4).coerceAtMost(90.dp)
         val spacing: Dp = (buttonSize / 5).coerceAtMost(16.dp)
 
-        Column(verticalArrangement = Arrangement.spacedBy(spacing)) {
+        Column(
+            modifier = Modifier.pointerInput(theme) {
+                detectHorizontalDragGestures { change, dragAmount ->
+                    change.consume()
+                    if (dragAmount < 0 && theme == KeypadTheme.RED) { // Swipe Left to Right (->)
+                        onEvent(KeypadEvent.ThemeChange(KeypadTheme.GREEN))
+                    } else if (dragAmount > 0 && theme == KeypadTheme.GREEN) { // Swipe Right to Left (<-)
+                        onEvent(KeypadEvent.ThemeChange(KeypadTheme.RED))
+                    }
+                }
+            },
+            verticalArrangement = Arrangement.spacedBy(spacing)
+        ) {
             buttons.forEach { rowButtons ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -251,17 +264,21 @@ private fun Keypad(onEvent: (KeypadEvent) -> Unit, theme: KeypadTheme) {
 @Composable
 private fun ActionButtons(onEvent: (KeypadEvent) -> Unit, theme: KeypadTheme) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp, bottom = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         ActionButton(text = "-", onClick = {
-            val newTheme = if (theme == KeypadTheme.GREEN) KeypadTheme.RED else KeypadTheme.GREEN
-            onEvent(KeypadEvent.ThemeChange(newTheme))
-        }, modifier = Modifier.weight(1f), theme = theme)
-        ActionButton(text = "Submit", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f), isSubmit = true, theme = theme)
-        ActionButton(text = "+", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f), isSubmit = true, theme = theme)
+            if (theme == KeypadTheme.GREEN) {
+                onEvent(KeypadEvent.ThemeChange(KeypadTheme.RED))
+            }
+        }, modifier = Modifier.weight(1f), isHighlighted = theme == KeypadTheme.RED, theme = theme)
+        ActionButton(text = "Submit", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f), isSubmit = true, isHighlighted = true, theme = theme)
+        ActionButton(text = "+", onClick = {
+            if (theme == KeypadTheme.RED) {
+                onEvent(KeypadEvent.ThemeChange(KeypadTheme.GREEN))
+            }
+        }, modifier = Modifier.weight(1f), isHighlighted = theme == KeypadTheme.GREEN, theme = theme)
     }
 }
 
@@ -271,18 +288,19 @@ fun ActionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isSubmit: Boolean = false,
+    isHighlighted: Boolean,
     theme: KeypadTheme
 ) {
     val primaryColor = if (theme == KeypadTheme.GREEN) GreenPrimary else RedPrimary
     Button(
         onClick = onClick,
-        modifier = modifier.height(56.dp),
+        modifier = modifier.height(if (isSubmit) 64.dp else 56.dp),
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSubmit) Color.Transparent else primaryColor.copy(alpha = 0.1f),
-            contentColor = primaryColor
+            containerColor = if (isHighlighted) Color.Transparent else primaryColor.copy(alpha = 0.1f),
+            contentColor = if (isHighlighted) primaryColor else primaryColor.copy(alpha = 0.6f)
         ),
-        border = if (isSubmit) BorderStroke(2.dp, primaryColor) else null
+        border = if (isHighlighted) BorderStroke(2.dp, primaryColor) else null
     ) {
         Text(text = text, fontSize = 18.sp, fontWeight = FontWeight.Bold)
     }
