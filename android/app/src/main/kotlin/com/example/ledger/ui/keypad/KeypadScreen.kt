@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -48,7 +49,7 @@ fun KeypadScreen(viewModel: KeypadViewModel = viewModel()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF122017)) // background-dark
+                .background(Color(0xFF122017)) // background-dark(green mode)
                 .statusBarsPadding()
                 .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -114,14 +115,14 @@ fun Header() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.width(48.dp))
-        Text(
-            text = "Recents",
-            color = Color.White,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
-        )
+//        Text(
+//            text = "Recents",
+//            color = Color.White,
+//            fontSize = 18.sp,
+//            fontWeight = FontWeight.Bold,
+//            textAlign = TextAlign.Center,
+//            modifier = Modifier.weight(1f)
+//        )
         IconButton(onClick = { /* TODO */ }) {
             Icon(
                 imageVector = Icons.Default.Settings,
@@ -150,7 +151,7 @@ fun Footer() {
     }
 }
 
-@Composable
+@Composable // recents, keypad, accounts
 fun FooterButton(icon: ImageVector, label: String, isSelected: Boolean) {
     val color = if (isSelected) Color(0xFF39E079) else Color.White.copy(alpha = 0.6f)
     Column(
@@ -183,7 +184,7 @@ fun KeypadScreenPreview() {
                     .weight(1f)
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceAround
             ) {
                 // Amount Display
                 Box(
@@ -235,7 +236,7 @@ private fun Keypad(onEvent: (KeypadEvent) -> Unit) {
             buttons.forEach { rowButtons ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(spacing, Alignment.CenterHorizontally)
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     rowButtons.forEach { buttonText ->
                         KeypadButton(
@@ -255,11 +256,11 @@ private fun ActionButtons(onEvent: (KeypadEvent) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp, bottom = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         ActionButton(text = "-", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f))
         ActionButton(text = "Submit", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f), isSubmit = true)
-        ActionButton(text = "+", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f))
+        ActionButton(text = "+", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f), isSubmit = true)
     }
 }
 
@@ -310,7 +311,7 @@ private fun KeypadButton(
         Button(
             onClick = {
                 when (text) {
-                    "C" -> onEvent(KeypadEvent.Clear)
+             //     "C" -> onEvent(KeypadEvent.Clear)
                     "backspace" -> onEvent(KeypadEvent.Backspace)
                     else -> onEvent(KeypadEvent.Number(text.toInt()))
                 }
