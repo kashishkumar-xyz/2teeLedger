@@ -28,28 +28,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ledger.ui.keypad.theme.LedgerTheme
 
-// Custom Colors
-val ForensicRed = Color(0xFF8B0000)
-val ForensicDark = Color(0xFF0A0A0A)
-val ForensicLight = Color(0xFF1A1A1A)
-val CustomGreen = Color(0xFF39E079)
+// Theme Colors
+val GreenPrimary = Color(0xFF39E079)
+val GreenBackground = Color(0xFF122017)
+val RedPrimary = Color(0xFFEF4444)
+val RedBackground = Color(0xFF201212)
 
 @Composable
 fun KeypadScreen(viewModel: KeypadViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
+    val theme = uiState.theme
+
+    val backgroundColor = if (theme == KeypadTheme.GREEN) GreenBackground else RedBackground
+    val primaryColor = if (theme == KeypadTheme.GREEN) GreenPrimary else RedPrimary
 
     LedgerTheme(theme = uiState.theme) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF122017)) // background-dark(green mode)
+                .background(backgroundColor)
                 .statusBarsPadding()
                 .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -73,10 +76,10 @@ fun KeypadScreen(viewModel: KeypadViewModel = viewModel()) {
                 ) {
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = if (uiState.theme == KeypadTheme.GREEN) Color(0xFF39E079) else Color(0xFFEF4444))) {
+                            withStyle(style = SpanStyle(color = primaryColor)) {
                                 append("$")
                             }
-                            withStyle(style = SpanStyle(color = (if (uiState.theme == KeypadTheme.GREEN) Color(0xFF39E079) else Color(0xFFEF4444)).copy(alpha = 0.9f))) {
+                            withStyle(style = SpanStyle(color = primaryColor.copy(alpha = 0.9f))) {
                                 append(uiState.displayText)
                             }
                         },
@@ -95,12 +98,12 @@ fun KeypadScreen(viewModel: KeypadViewModel = viewModel()) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Keypad(onEvent = viewModel::onEvent)
-                    ActionButtons(onEvent = viewModel::onEvent)
+                    Keypad(onEvent = viewModel::onEvent, theme = theme)
+                    ActionButtons(onEvent = viewModel::onEvent, theme = theme)
                 }
             }
 
-            Footer()
+            Footer(theme = theme)
         }
     }
 }
@@ -115,14 +118,6 @@ fun Header() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.width(48.dp))
-//        Text(
-//            text = "Recents",
-//            color = Color.White,
-//            fontSize = 18.sp,
-//            fontWeight = FontWeight.Bold,
-//            textAlign = TextAlign.Center,
-//            modifier = Modifier.weight(1f)
-//        )
         IconButton(onClick = { /* TODO */ }) {
             Icon(
                 imageVector = Icons.Default.Settings,
@@ -134,9 +129,10 @@ fun Header() {
 }
 
 @Composable
-fun Footer() {
+fun Footer(theme: KeypadTheme) {
+    val primaryColor = if (theme == KeypadTheme.GREEN) GreenPrimary else RedPrimary
     Column {
-        Divider(color = Color(0xFF39E079).copy(alpha = 0.2f))
+        Divider(color = primaryColor.copy(alpha = 0.2f))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -144,16 +140,17 @@ fun Footer() {
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            FooterButton(icon = Icons.Default.History, label = "Recents", isSelected = false)
-            FooterButton(icon = Icons.Default.Apps, label = "Keypad", isSelected = true)
-            FooterButton(icon = Icons.Default.Person, label = "Accounts", isSelected = false)
+            FooterButton(icon = Icons.Default.History, label = "Recents", isSelected = false, theme = theme)
+            FooterButton(icon = Icons.Default.Apps, label = "Keypad", isSelected = true, theme = theme)
+            FooterButton(icon = Icons.Default.Person, label = "Accounts", isSelected = false, theme = theme)
         }
     }
 }
 
 @Composable // recents, keypad, accounts
-fun FooterButton(icon: ImageVector, label: String, isSelected: Boolean) {
-    val color = if (isSelected) Color(0xFF39E079) else Color.White.copy(alpha = 0.6f)
+fun FooterButton(icon: ImageVector, label: String, isSelected: Boolean, theme: KeypadTheme) {
+    val primaryColor = if (theme == KeypadTheme.GREEN) GreenPrimary else RedPrimary
+    val color = if (isSelected) primaryColor else Color.White.copy(alpha = 0.6f)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -171,7 +168,7 @@ fun KeypadScreenPreview() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF122017))
+                .background(GreenBackground)
                 .statusBarsPadding()
                 .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -199,7 +196,7 @@ fun KeypadScreenPreview() {
                         textAlign = TextAlign.Center,
                         fontSize = 72.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF39E079)
+                        color = GreenPrimary
                     )
                 }
 
@@ -207,17 +204,17 @@ fun KeypadScreenPreview() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Keypad(onEvent = {})
-                    ActionButtons(onEvent = {})
+                    Keypad(onEvent = {}, theme = KeypadTheme.GREEN)
+                    ActionButtons(onEvent = {}, theme = KeypadTheme.GREEN)
                 }
             }
-            Footer()
+            Footer(theme = KeypadTheme.GREEN)
         }
     }
 }
 
 @Composable
-private fun Keypad(onEvent: (KeypadEvent) -> Unit) {
+private fun Keypad(onEvent: (KeypadEvent) -> Unit, theme: KeypadTheme) {
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
@@ -242,7 +239,8 @@ private fun Keypad(onEvent: (KeypadEvent) -> Unit) {
                         KeypadButton(
                             text = buttonText,
                             onEvent = onEvent,
-                            modifier = Modifier.size(buttonSize)
+                            modifier = Modifier.size(buttonSize),
+                            theme = theme
                         )
                     }
                 }
@@ -251,16 +249,19 @@ private fun Keypad(onEvent: (KeypadEvent) -> Unit) {
     }
 }
 @Composable
-private fun ActionButtons(onEvent: (KeypadEvent) -> Unit) {
+private fun ActionButtons(onEvent: (KeypadEvent) -> Unit, theme: KeypadTheme) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp, bottom = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        ActionButton(text = "-", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f))
-        ActionButton(text = "Submit", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f), isSubmit = true)
-        ActionButton(text = "+", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f), isSubmit = true)
+        ActionButton(text = "-", onClick = {
+            val newTheme = if (theme == KeypadTheme.GREEN) KeypadTheme.RED else KeypadTheme.GREEN
+            onEvent(KeypadEvent.ThemeChange(newTheme))
+        }, modifier = Modifier.weight(1f), theme = theme)
+        ActionButton(text = "Submit", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f), isSubmit = true, theme = theme)
+        ActionButton(text = "+", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f), isSubmit = true, theme = theme)
     }
 }
 
@@ -269,17 +270,19 @@ fun ActionButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isSubmit: Boolean = false
+    isSubmit: Boolean = false,
+    theme: KeypadTheme
 ) {
+    val primaryColor = if (theme == KeypadTheme.GREEN) GreenPrimary else RedPrimary
     Button(
         onClick = onClick,
         modifier = modifier.height(56.dp),
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSubmit) Color.Transparent else Color(0xFF39E079).copy(alpha = 0.1f),
-            contentColor = Color(0xFF39E079)
+            containerColor = if (isSubmit) Color.Transparent else primaryColor.copy(alpha = 0.1f),
+            contentColor = primaryColor
         ),
-        border = if (isSubmit) BorderStroke(2.dp, Color(0xFF39E079)) else null
+        border = if (isSubmit) BorderStroke(2.dp, primaryColor) else null
     ) {
         Text(text = text, fontSize = 18.sp, fontWeight = FontWeight.Bold)
     }
@@ -289,15 +292,17 @@ fun ActionButton(
 @Preview(showBackground = true, backgroundColor = 0xFF122017)
 @Composable
 fun KeypadPreview() {
-    Keypad(onEvent = {})
+    Keypad(onEvent = {}, theme = KeypadTheme.GREEN)
 }
 
 @Composable
 private fun KeypadButton(
     text: String,
     onEvent: (KeypadEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    theme: KeypadTheme
 ) {
+    val primaryColor = if (theme == KeypadTheme.GREEN) GreenPrimary else RedPrimary
     BoxWithConstraints(modifier = modifier) {
         val iconSize = maxWidth * 0.4f
         val numberFontSize = (maxWidth.value * 0.5f).sp
@@ -328,14 +333,14 @@ private fun KeypadButton(
                     )
                 },
             shape = shape,
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF39E079).copy(alpha = 0.1f)),
+            colors = ButtonDefaults.buttonColors(containerColor = primaryColor.copy(alpha = 0.1f)),
             contentPadding = PaddingValues(0.dp)
         ) {
             if (text == "backspace") {
                 Icon(
                     imageVector = Icons.Filled.Backspace,
                     contentDescription = "Backspace",
-                    tint = Color(0xFF39E079),
+                    tint = primaryColor,
                     modifier = Modifier.size(iconSize)
                 )
             } else {
@@ -343,7 +348,7 @@ private fun KeypadButton(
                     text,
                     fontSize = if (text == "C") cFontSize else numberFontSize,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF39E079)
+                    color = primaryColor
                 )
             }
         }
@@ -354,11 +359,11 @@ private fun KeypadButton(
 @Preview
 @Composable
 fun KeypadButtonPreviewNumber() {
-    KeypadButton(text = "5", onEvent = {}, modifier = Modifier.size(80.dp))
+    KeypadButton(text = "5", onEvent = {}, modifier = Modifier.size(80.dp), theme = KeypadTheme.GREEN)
 }
 
 @Preview
 @Composable
 fun KeypadButtonPreviewBackspace() {
-    KeypadButton(text = "backspace", onEvent = {}, modifier = Modifier.size(80.dp))
+    KeypadButton(text = "backspace", onEvent = {}, modifier = Modifier.size(80.dp), theme = KeypadTheme.GREEN)
 }
