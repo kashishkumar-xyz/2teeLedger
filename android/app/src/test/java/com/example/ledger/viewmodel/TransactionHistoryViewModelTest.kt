@@ -1,10 +1,12 @@
 package com.example.ledger.viewmodel
 
+import com.example.ledger.ffi.ILedgerRepository
 import com.example.ledger.ffi.LedgerRepository
 import com.example.ledger.model.Transaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -19,13 +21,13 @@ import org.mockito.kotlin.whenever
 class TransactionHistoryViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var ledgerRepository: LedgerRepository
+    private lateinit var ledgerRepository: ILedgerRepository
     private lateinit var viewModel: TransactionHistoryViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        ledgerRepository = mock()
+        ledgerRepository = mock<ILedgerRepository>()
         viewModel = TransactionHistoryViewModel(ledgerRepository)
     }
 
@@ -35,7 +37,7 @@ class TransactionHistoryViewModelTest {
     }
 
     @Test
-    fun `loadTransactionHistory loads transactions successfully`() = runTest {
+    fun loadTransactionHistory_loads_transactions_successfully() = runTest {
         // Given
         val person = "Alice"
         val expectedTransactions = listOf(
@@ -54,7 +56,7 @@ class TransactionHistoryViewModelTest {
     }
 
     @Test
-    fun `loadTransactionHistory handles error`() = runTest {
+    fun loadTransactionHistory_handles_error() = runTest {
         // Given
         val person = "Alice"
         val errorMessage = "Database error"

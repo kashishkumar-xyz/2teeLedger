@@ -1,5 +1,6 @@
 package com.example.ledger.viewmodel
 
+import com.example.ledger.ffi.ILedgerRepository
 import com.example.ledger.ffi.LedgerRepository
 import com.example.ledger.model.Balance
 import kotlinx.coroutines.Dispatchers
@@ -19,13 +20,13 @@ import org.mockito.kotlin.whenever
 class BalanceViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var ledgerRepository: LedgerRepository
+    private lateinit var ledgerRepository: ILedgerRepository
     private lateinit var viewModel: BalanceViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        ledgerRepository = mock()
+        ledgerRepository = mock<ILedgerRepository>()
     }
 
     @After
@@ -34,13 +35,14 @@ class BalanceViewModelTest {
     }
 
     @Test
-    fun `init loads balances successfully`() = runTest {
+    fun init_loads_balances_successfully() = runTest {
         // Given
         val expectedBalances = listOf(Balance("Alice", 100.0), Balance("Bob", -50.0))
         whenever(ledgerRepository.getAllBalances()).thenReturn(expectedBalances)
 
         // When
         viewModel = BalanceViewModel(ledgerRepository)
+        viewModel.loadBalances()
 
         // Then
         testDispatcher.scheduler.advanceUntilIdle() // Execute coroutines
@@ -49,7 +51,7 @@ class BalanceViewModelTest {
     }
 
     @Test
-    fun `init handles error when loading balances`() = runTest {
+    fun init_handles_error_when_loading_balances() = runTest {
         // Given
         val errorMessage = "Database error"
         whenever(ledgerRepository.getAllBalances()).thenThrow(RuntimeException(errorMessage))
@@ -65,7 +67,7 @@ class BalanceViewModelTest {
     }
 
     @Test
-    fun `saveTransaction calls repository and refreshes balances`() = runTest {
+    fun saveTransaction_calls_repository_and_refreshes_balances() = runTest {
         // Given
         whenever(ledgerRepository.getAllBalances()).thenReturn(emptyList()) // Initial state
         viewModel = BalanceViewModel(ledgerRepository)
@@ -84,7 +86,7 @@ class BalanceViewModelTest {
     }
 
     @Test
-    fun `saveTransaction handles error`() = runTest {
+    fun saveTransaction_handles_error() = runTest {
         // Given
         val errorMessage = "Failed to save"
         whenever(

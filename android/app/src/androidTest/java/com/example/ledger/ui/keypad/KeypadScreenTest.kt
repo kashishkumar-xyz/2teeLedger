@@ -18,7 +18,7 @@ class KeypadScreenTest {
     @Test
     fun tappingNumberButton_updatesDisplay() {
         composeTestRule.setContent {
-            KeypadScreen()
+            KeypadScreen(onNavigateToSearch = {})
         }
 
         composeTestRule.onNodeWithText("7").performClick()
@@ -29,7 +29,7 @@ class KeypadScreenTest {
     @Test
     fun shortPressOnBackspace_removesLastDigit() {
         composeTestRule.setContent {
-            KeypadScreen()
+            KeypadScreen(onNavigateToSearch = {})
         }
 
         composeTestRule.onNodeWithText("1").performClick()
@@ -45,7 +45,7 @@ class KeypadScreenTest {
     @Test
     fun longPressOnBackspace_clearsDisplay() {
         composeTestRule.setContent {
-            KeypadScreen()
+            KeypadScreen(onNavigateToSearch = {})
         }
 
         composeTestRule.onNodeWithText("1").performClick()

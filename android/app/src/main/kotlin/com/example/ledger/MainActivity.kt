@@ -11,7 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.example.ledger.ffi.LedgerRepository
 import com.example.ledger.security.KeyManager
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.ledger.ffi.ILedgerRepository
 import com.example.ledger.ui.keypad.KeypadScreen
+import com.example.ledger.ui.search.SearchScreen
 import com.example.ledger.viewmodel.BalanceViewModel
 import com.example.ledger.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
@@ -21,7 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Setup Repository and ViewModels
-        val ledgerRepository = LedgerRepository(applicationContext)
+        val ledgerRepository: ILedgerRepository = LedgerRepository(applicationContext)
         val viewModelFactory = ViewModelFactory(ledgerRepository)
         val balanceViewModel: BalanceViewModel by viewModels { viewModelFactory }
 
@@ -43,7 +48,15 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    KeypadScreen()
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "keypad_screen") {
+                        composable("keypad_screen") {
+                            KeypadScreen(onNavigateToSearch = { navController.navigate("search_screen") })
+                        }
+                        composable("search_screen") {
+                            SearchScreen(onNavigateToAddContact = { /* TODO: Implement navigation to Add New Contact */ })
+                        }
+                    }
                 }
             }
         }

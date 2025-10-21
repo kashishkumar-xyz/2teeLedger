@@ -7,7 +7,7 @@ import com.example.ledger.model.Transaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class LedgerRepository(private val context: Context) {
+class LedgerRepository(private val context: Context) : ILedgerRepository {
 
     companion object {
         init {
@@ -18,7 +18,7 @@ class LedgerRepository(private val context: Context) {
 
     private val ledgerApi = LedgerApi.INSTANCE
 
-    suspend fun openDatabase(key: ByteArray) {
+    override suspend fun openDatabase(key: ByteArray) {
         withContext(Dispatchers.IO) {
             val dbPath = context.getDatabasePath("ledger.db").absolutePath
             val passphrase = Base64.encodeToString(key, Base64.NO_WRAP)
@@ -44,7 +44,7 @@ class LedgerRepository(private val context: Context) {
         }
     }
 
-    suspend fun addTransaction(person: String, amount: Double, note: String?) {
+    override suspend fun addTransaction(person: String, amount: Double, note: String?) {
         withContext(Dispatchers.IO) {
             val result = ledgerApi.add_transaction(person, amount, note)
             if (result != 0) {
@@ -55,7 +55,7 @@ class LedgerRepository(private val context: Context) {
         }
     }
 
-    suspend fun getAllBalances(): List<Balance> {
+    override suspend fun getAllBalances(): List<Balance> {
         return withContext(Dispatchers.IO) {
             val len = intArrayOf(0)
             val ptr = ledgerApi.get_all_balances(len)
@@ -76,7 +76,7 @@ class LedgerRepository(private val context: Context) {
         }
     }
 
-    suspend fun getTransactionsForPerson(person: String): List<Transaction> {
+    override suspend fun getTransactionsForPerson(person: String): List<Transaction> {
         return withContext(Dispatchers.IO) {
             val len = intArrayOf(0)
             val ptr = ledgerApi.get_transactions_for_person(person, len)

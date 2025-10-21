@@ -2,6 +2,7 @@ package com.example.ledger.ui.keypad
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +43,7 @@ val RedPrimary = Color(0xFFEF4444)
 val RedBackground = Color(0xFF201212)
 
 @Composable
-fun KeypadScreen(viewModel: KeypadViewModel = viewModel()) {
+fun KeypadScreen(viewModel: KeypadViewModel = viewModel(), onNavigateToSearch: () -> Unit) {
     val uiState by viewModel.uiState.collectAsState()
     val theme = uiState.theme
 
@@ -104,7 +105,7 @@ fun KeypadScreen(viewModel: KeypadViewModel = viewModel()) {
                 }
             }
 
-            Footer(theme = theme)
+            Footer(theme = theme, onNavigateToSearch = onNavigateToSearch)
         }
     }
 }
@@ -130,7 +131,7 @@ fun Header() {
 }
 
 @Composable
-fun Footer(theme: KeypadTheme) {
+fun Footer(theme: KeypadTheme, onNavigateToSearch: () -> Unit) {
     val primaryColor = if (theme == KeypadTheme.GREEN) GreenPrimary else RedPrimary
     Column {
         Divider(color = primaryColor.copy(alpha = 0.2f))
@@ -141,18 +142,19 @@ fun Footer(theme: KeypadTheme) {
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            FooterButton(icon = Icons.Default.History, label = "Recents", isSelected = false, theme = theme)
-            FooterButton(icon = Icons.Default.Apps, label = "Keypad", isSelected = true, theme = theme)
-            FooterButton(icon = Icons.Default.Person, label = "Accounts", isSelected = false, theme = theme)
+            FooterButton(icon = Icons.Default.History, label = "Recents", isSelected = false, theme = theme, onClick = { /* TODO: Implement navigation to Recents */ })
+            FooterButton(icon = Icons.Default.Apps, label = "Keypad", isSelected = true, theme = theme, onClick = { /* Current screen */ })
+            FooterButton(icon = Icons.Default.Person, label = "Accounts", isSelected = false, theme = theme, onClick = onNavigateToSearch)
         }
     }
 }
 
 @Composable // recents, keypad, accounts
-fun FooterButton(icon: ImageVector, label: String, isSelected: Boolean, theme: KeypadTheme) {
+fun FooterButton(icon: ImageVector, label: String, isSelected: Boolean, theme: KeypadTheme, onClick: () -> Unit) {
     val primaryColor = if (theme == KeypadTheme.GREEN) GreenPrimary else RedPrimary
     val color = if (isSelected) primaryColor else Color.White.copy(alpha = 0.6f)
     Column(
+        modifier = Modifier.clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -209,7 +211,7 @@ fun KeypadScreenPreview() {
                     ActionButtons(onEvent = {}, theme = KeypadTheme.GREEN)
                 }
             }
-            Footer(theme = KeypadTheme.GREEN)
+            Footer(theme = KeypadTheme.GREEN, onNavigateToSearch = {})
         }
     }
 }

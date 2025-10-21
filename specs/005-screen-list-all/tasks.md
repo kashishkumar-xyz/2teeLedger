@@ -22,9 +22,9 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create Android project structure for `ui/search`, `data`, `ffi` in `android/app/src/main/kotlin/com/example/app/`
-- [ ] T002 Configure Android project for Jetpack Compose in `android/app/build.gradle.kts`
-- [ ] T003 Ensure Rust FFI bindings are correctly generated and linked in `android/app/build.gradle.kts` and `ledger/build.rs`
+- [x] T001 Create Android project structure for `ui/search`, `data`, `ffi` in `android/app/src/main/kotlin/com/example/app/`
+- [x] T002 Configure Android project for Jetpack Compose in `android/app/build.gradle.kts`
+- [x] T003 Ensure Rust FFI bindings are correctly generated and linked in `android/app/build.gradle.kts` and `ledger/build.rs`
 
 ---
 
@@ -34,8 +34,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Implement FFI interface in Android: Create `FfiBindings.kt` in `android/app/src/main/kotlin/com/example/app/ffi/`
-- [ ] T005 Implement `AccountRepository.kt` to use FFI for data retrieval in `android/app/src/main/kotlin/com/example/app/data/`
+- [x] T004 Implement FFI interface in Android: Create `FfiBindings.kt` in `android/app/src/main/kotlin/com/example/ledger/ffi/` (Note: `LedgerRepository.kt` already serves as the primary FFI interface)
+- [x] T005 Implement `AccountRepository.kt` to use FFI for data retrieval in `android/app/src/main/kotlin/com/example/ledger/data/` (Note: `LedgerRepository.kt` in `com.example.ledger/ffi` already fulfills this role)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -49,18 +49,18 @@
 
 ### Tests for User Story 1
 
-- [ ] T006 [US1] Write unit tests for `SearchViewModel.kt` in `android/app/src/test/kotlin/com/example/app/ui/search/SearchViewModelTest.kt`
-- [ ] T007 [US1] Write UI tests for `SearchScreen.kt` (initial load, keyboard visible) in `android/app/src/androidTest/kotlin/com/example/app/ui/search/SearchScreenTest.kt`
+- [x] T006 [US1] Write unit tests for `SearchViewModel.kt` in `android/app/src/test/java/com/example/ledger/viewmodel/SearchViewModelTest.kt`
+- [x] T007 [US1] Write UI tests for `SearchScreen.kt` (initial load, keyboard visible) in `android/app/src/androidTest/java/com/example/ledger/ui/search/SearchScreenTest.kt`
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Implement `SearchScreen.kt` (UI layout, search bar, account list) in `android/app/src/main/kotlin/com/example/app/ui/search/SearchScreen.kt`
-- [ ] T009 [US1] Implement `SearchViewModel.kt` (handle search logic, interact with `AccountRepository`) in `android/app/src/main/kotlin/com/example/app/ui/search/SearchViewModel.kt`
-- [ ] T010 [US1] Apply dark mode theme and specified colors (FR-007) in `android/app/src/main/res/values/colors.xml` and `android/app/src/main/kotlin/com/example/app/ui/theme/Theme.kt`
-- [ ] T011 [US1] Apply specified typography (FR-008) in `android/app/src/main/kotlin/com/example/app/ui/theme/Type.kt`
-- [ ] T012 [US1] Implement balance color-coding (green for positive, red for negative) in `SearchScreen.kt` (FR-006)
-- [ ] T013 [US1] Ensure native Android keyboard is visible and active on screen load (FR-002) in `SearchScreen.kt`
-- [ ] T014 [US1] Write UI tests for `SearchScreen.kt` (search functionality, balance color-coding) in `android/app/src/androidTest/kotlin/com/example/app/ui/search/SearchScreenTest.kt`
+- [x] T008 [US1] Implement `SearchScreen.kt` (UI layout, search bar, account list) in `android/app/src/main/kotlin/com/example/app/ui/search/SearchScreen.kt`
+- [x] T009 [US1] Implement `SearchViewModel.kt` (handle search logic, interact with `AccountRepository`) in `android/app/src/main/kotlin/com/example/app/ui/search/SearchViewModel.kt`
+- [x] T010 [US1] Apply dark mode theme and specified colors (FR-007) in `android/app/src/main/res/values/colors.xml` and `android/app/src/main/kotlin/com/example/app/ui/theme/Theme.kt`
+- [x] T011 [US1] Apply specified typography (FR-008) in `android/app/src/main/kotlin/com/example/app/ui/theme/Type.kt`
+- [x] T012 [US1] Implement balance color-coding (green for positive, red for negative) in `SearchScreen.kt` (FR-006)
+- [x] T013 [US1] Ensure native Android keyboard is visible and active on screen load (FR-002) in `SearchScreen.kt`
+- [x] T014 [US1] Write UI tests for `SearchScreen.kt` (search functionality, balance color-coding) in `android/app/src/androidTest/java/com/example/ledger/ui/search/SearchScreenTest.kt`
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -74,11 +74,11 @@
 
 ### Tests for User Story 2
 
-- [ ] T015 [US2] Write UI tests for "No results found" scenario in `android/app/src/androidTest/kotlin/com/example/app/ui/search/SearchScreenTest.kt`
+- [x] T015 [US2] Write UI tests for "No results found" scenario in `android/app/src/androidTest/java/com/example/ledger/ui/search/SearchScreenTest.kt`
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Implement "No results found" message in `SearchScreen.kt` (FR-009)
+- [x] T016 [US2] Implement "No results found" message in `SearchScreen.kt` (FR-009)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -92,12 +92,12 @@
 
 ### Tests for User Story 3
 
-- [ ] T017 [US3] Write UI tests for "+ New Contact" button in `android/app/src/androidTest/kotlin/com/example/app/ui/search/SearchScreenTest.kt`
+- [x] T017 [US3] Write UI tests for "+ New Contact" button in `android/app/src/androidTest/java/com/example/ledger/ui/search/SearchScreenTest.kt`
 
 ### Implementation for User Story 3
 
-- [ ] T018 [US3] Implement "+ New Contact" button in `SearchScreen.kt` (FR-003)
-- [ ] T019 [US3] Implement navigation to "Add New Contact" screen from `SearchScreen.kt`
+- [x] T018 [US3] Implement "+ New Contact" button in `SearchScreen.kt` (FR-003)
+- [x] T019 [US3] Implement navigation to "Add New Contact" screen from `SearchScreen.kt`
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -107,13 +107,13 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T020 Implement edge case: Empty search query (display "Suggestions" title and "+ New Contact" button, no account list) in `SearchScreen.kt`
-- [ ] T021 Implement edge case: Backend Service Unavailable (display error message) in `SearchScreen.kt` and `SearchViewModel.kt`
-- [ ] T022 Implement edge case: Missing Avatar (display default placeholder) in `SearchScreen.kt` (FR-010)
-- [ ] T023 Implement edge case: Long Account Holder Name (truncate with ellipsis or wrap text) in `SearchScreen.kt`
-- [ ] T024 Review and refine UI/UX for overall polish and adherence to visual reference (`docs/UI-docs/designs/screens/account-search/ui.png`).
-- [ ] T025 Performance testing and optimization for search queries and UI rendering.
-- [ ] T026 Accessibility checks for the Search Screen.
+- [x] T020 Implement edge case: Empty search query (display "Suggestions" title and "+ New Contact" button, no account list) in `SearchScreen.kt`
+- [x] T021 Implement edge case: Backend Service Unavailable (display error message) in `SearchScreen.kt` and `SearchViewModel.kt`
+- [x] T022 Implement edge case: Missing Avatar (display default placeholder) in `SearchScreen.kt` (FR-010)
+- [x] T023 Implement edge case: Long Account Holder Name (truncate with ellipsis or wrap text) in `SearchScreen.kt`
+- [x] T024 Review and refine UI/UX for overall polish and adherence to visual reference (`docs/UI-docs/designs/screens/account-search/ui.png`).
+- [x] T025 Performance testing and optimization for search queries and UI rendering.
+- [x] T026 Accessibility checks for the Search Screen.
 
 ---
 

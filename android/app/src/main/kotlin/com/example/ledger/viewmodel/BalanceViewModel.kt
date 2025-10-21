@@ -3,12 +3,13 @@ package com.example.ledger.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ledger.ffi.LedgerRepository
+import com.example.ledger.ffi.ILedgerRepository
 import com.example.ledger.model.Balance
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class BalanceViewModel(private val ledgerRepository: LedgerRepository) : ViewModel() {
+class BalanceViewModel(private val ledgerRepository: ILedgerRepository) : ViewModel() {
 
     private val _balances = MutableStateFlow<List<Balance>>(emptyList())
     val balances: StateFlow<List<Balance>> = _balances
