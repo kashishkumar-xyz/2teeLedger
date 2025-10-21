@@ -1,3 +1,10 @@
+package com.example.ledger.viewmodel
+
+import com.example.ledger.ffi.ILedgerRepository
+import com.example.ledger.model.Balance
+import com.example.ledger.ui.search.SearchViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -11,9 +18,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.thenAnswer
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
-
-@ExperimentalCoroutinesApi
+import kotlin.test.assertTrue@ExperimentalCoroutinesApi
 class SearchViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
