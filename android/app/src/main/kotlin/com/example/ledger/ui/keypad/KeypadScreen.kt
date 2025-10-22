@@ -334,7 +334,7 @@ private fun KeypadButton(
         Button(
             onClick = {
                 when (text) {
-             //     "C" -> onEvent(KeypadEvent.Clear)
+                  "C" -> onEvent(KeypadEvent.Clear)
                     "backspace" -> onEvent(KeypadEvent.Backspace)
                     else -> onEvent(KeypadEvent.Number(text.toInt()))
                 }
