@@ -1,0 +1,4 @@
+ensure keypad works properly, before starting working "list-balance-screen"                                                                                                     rs    18:12 
+
+[ ] fix 'C' (make it dummy, no action)  
+[ ] add long press gesture to backspace"
