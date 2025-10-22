@@ -2,3 +2,8 @@ ensure keypad works properly, before starting working "list-balance-screen"     
 
 [ ] fix 'C' (make it dummy, no action)  
 [ ] add long press gesture to backspace"
+
+
+[ ] add scroll view if number larger than width
+[x] and commas to number based on numbering system
+

@@ -11,9 +11,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -80,6 +82,7 @@ fun BalanceScreen(
 @Composable
 fun BalanceListItem(balance: Balance, onClick: () -> Unit) {
     Card(
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2F2A)),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
@@ -90,10 +93,10 @@ fun BalanceListItem(balance: Balance, onClick: () -> Unit) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(text = balance.person, modifier = Modifier.weight(1f))
+            Text(text = balance.person, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = Color(0xFFEAEAEA))
             Text(
-                text = String.format("%.2f", balance.total),
-                color = if (balance.total >= 0) Color.Black else Color.Red
+                text = "$${String.format("%.2f", kotlin.math.abs(balance.total))}",
+                color = if (balance.total >= 0) Color(0xFF4CAF50) else Color(0xFFF44336),
             )
         }
     }
