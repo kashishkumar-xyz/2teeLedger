@@ -1,9 +1,60 @@
-ensure keypad works properly, before starting working "list-balance-screen"                                                                                                     rs    18:12 
 
-[ ] fix 'C' (make it dummy, no action)  
-[ ] add long press gesture to backspace"
+fix: Complete UI & Nav OVERHAUL (works ✅)
+
+- now keypad is the entrypoint of the app
+- onClick_submit: navigates to addTransaction with amount value passed
+to it
+- onClick_Account btn on Keypad: navigates to BalancesScreen, with
+backwards navigation feat.
 
 
-[ ] add scroll view if number larger than width
-[x] and commas to number based on numbering system
+---
+
+(!) What neeeds fixing:
+
+- initially saw an error of failed to initDB which caused no tx's to be
+saved, to resolve i cleared cache and reinstalled, and made the first
+transaction thru the BalanceScreen->AddTx flow to ensure proper init of
+DB, then it worked
+
+(!): on AddTx submit navigate to BalanceScreen to show new or updated tx
+
+optional features:
+(?) display formatting of amount textfield to have colored border and
+edit-glyph to renable edditing on it ; maybe turn it to a label or text
+field from OutlinedText Field
+
+---
+
+ OutlinedTextField(
+     value = person,
+     onValueChange = { person = it },
+     label = { Text("Person") },
+     modifier = Modifier.fillMaxWidth(),
+     isError = isError && person.isBlank()
+ )
+
+ Button(
+     onClick = {
+         val amountDouble = amount.toDoubleOrNull()
+         if (person.isNotBlank() && amountDouble != null) {
+             val finalNote = note.takeIf { it.isNotBlank() }
+             onTransactionSaved(person, amountDouble, finalNote)
+         } else {
+             isError = true
+         }
+     },
+     modifier = Modifier.fillMaxWidth()
+ ) {
+     Text("Save Transaction")
+ }
+
+
+ in above code i want to format the value of "person" before it is passed onto onTransactionSaved, currently we are passing "person" as is, without any formatting, i want the "person" input to go thru the following transformations before onTransactionSaved is called:
+  - trim the string for any whitespaces at its start or end
+  - make the string have unfiform casing, Title Case: All words are capitalized (e.g, "John Doe Au")
+
+revision to above change:
+- now instead of waiting till Button.onClick to format the text, i want the input of the user getting formatted live on the spot while they are typing it, 
+    - this live formatted version of their input should be previewed in the text field in real time, and the same formatted text should then be stored and passed to onTransactionSaved.
 

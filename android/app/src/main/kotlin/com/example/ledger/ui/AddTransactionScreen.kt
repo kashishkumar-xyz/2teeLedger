@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +35,7 @@ fun AddTransactionScreen(
     var amount by remember { mutableStateOf(initialAmount ?: "") }
     var note by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
+    var personInputError by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -50,10 +52,32 @@ fun AddTransactionScreen(
         ) {
             OutlinedTextField(
                 value = person,
-                onValueChange = { person = it },
+                onValueChange = { newPersonValue ->
+                    val invalidCharsRegex = Regex("[0-9!@#\$%^&*(),.?\":{}|<>]")
+                    val sanitizedValue = newPersonValue.replace(invalidCharsRegex, "")
+
+                    personInputError = newPersonValue.length != sanitizedValue.length
+
+                    person = sanitizedValue.split(' ').joinToString(" ") {
+                        if (it.isNotEmpty()) {
+                            it.lowercase(Locale.getDefault()).replaceFirstChar {
+                                if (it.isLowerCase()) it.titlecase(
+                                    Locale.getDefault()
+                                ) else it.toString()
+                            }
+                        } else {
+                            ""
+                        }
+                    }
+                },
                 label = { Text("Person") },
                 modifier = Modifier.fillMaxWidth(),
-                isError = isError && person.isBlank()
+                isError = (isError && person.isBlank()) || personInputError,
+                supportingText = {
+                    if (personInputError) {
+                        Text("special characters not allowed")
+                    }
+                }
             )
             OutlinedTextField(
                 value = amount,
@@ -73,9 +97,10 @@ fun AddTransactionScreen(
             Button(
                 onClick = {
                     val amountDouble = amount.toDoubleOrNull()
-                    if (person.isNotBlank() && amountDouble != null) {
+                    val formattedPerson = person.trim()
+                    if (formattedPerson.isNotBlank() && amountDouble != null) {
                         val finalNote = note.takeIf { it.isNotBlank() }
-                        onTransactionSaved(person, amountDouble, finalNote)
+                        onTransactionSaved(formattedPerson, amountDouble, finalNote)
                     } else {
                         isError = true
                     }
