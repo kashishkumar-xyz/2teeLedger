@@ -85,7 +85,7 @@ fun BalanceScreen(
 @Composable
 fun BalanceListItem(balance: Balance, onClick: () -> Unit) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2F2A)),
+//        colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2F2A)),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
@@ -104,7 +104,7 @@ fun BalanceListItem(balance: Balance, onClick: () -> Unit) {
                 text = balance.person,
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFFEAEAEA)
+//                color = Color(0xFFEAEAEA)
             )
             Text(
                 text = "$${String.format("%.2f", kotlin.math.abs(balance.total))}",

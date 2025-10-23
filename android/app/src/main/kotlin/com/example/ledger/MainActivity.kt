@@ -87,6 +87,7 @@ class MainActivity : ComponentActivity() {
                             )
                         ) {
                             AddTransactionScreen(
+                                viewModel = balanceViewModel,
                                 initialAmount = it.arguments?.getString("amount"),
                                 initialPerson = it.arguments?.getString("person"),
                                 onTransactionSaved = { person, amount, note ->
