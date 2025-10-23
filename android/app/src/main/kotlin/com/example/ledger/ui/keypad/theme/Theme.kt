@@ -10,13 +10,15 @@ import com.example.ledger.ui.keypad.KeypadTheme
 private val LightGreenColorScheme = lightColorScheme(
     primary = Green,
     secondary = Green,
-    tertiary = Green
+    tertiary = Green,
+    background = DarkGray
 )
 
 private val LightRedColorScheme = lightColorScheme(
     primary = Red,
     secondary = Red,
-    tertiary = Red
+    tertiary = Red,
+    background = DarkGray
 )
 
 val Typography = Typography()

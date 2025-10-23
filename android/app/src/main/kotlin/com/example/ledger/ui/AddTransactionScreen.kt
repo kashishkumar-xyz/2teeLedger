@@ -26,9 +26,12 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTransactionScreen(onTransactionSaved: (person: String, amount: Double, note: String?) -> Unit) {
+fun AddTransactionScreen(
+    initialAmount: String?,
+    onTransactionSaved: (person: String, amount: Double, note: String?) -> Unit
+) {
     var person by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
+    var amount by remember { mutableStateOf(initialAmount ?: "") }
     var note by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
 

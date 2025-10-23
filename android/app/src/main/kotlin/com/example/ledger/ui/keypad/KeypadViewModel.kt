@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -15,6 +14,7 @@ enum class KeypadTheme {
 
 data class KeypadState(
     val displayText: String = "0",
+    val rawText: String = "0",
     val theme: KeypadTheme = KeypadTheme.GREEN
 )
 
@@ -23,6 +23,7 @@ sealed class KeypadEvent {
     object Decimal : KeypadEvent()
     object Backspace : KeypadEvent()
     object Clear : KeypadEvent()
+    object Reset : KeypadEvent()
     data class ThemeChange(val theme: KeypadTheme) : KeypadEvent()
 }
 
@@ -30,9 +31,6 @@ class KeypadViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(KeypadState())
     val uiState: StateFlow<KeypadState> = _uiState.asStateFlow()
-
-    // Internal state to hold the number without formatting
-    private var rawText = "0"
 
     private fun formatNumber(number: String): String {
         // Handle cases where the string might be empty or just a "-"
@@ -47,34 +45,42 @@ class KeypadViewModel : ViewModel() {
             NumberFormat.getNumberInstance(Locale.US).format(parsed)
         } catch (e: NumberFormatException) {
             // If it's not a valid number (e.g., during input), return the raw text
-            rawText
+            uiState.value.rawText
         }
     }
 
     fun onEvent(event: KeypadEvent) {
         when (event) {
             is KeypadEvent.Number -> {
-                rawText = if (rawText == "0") {
+                val newRawText = if (_uiState.value.rawText == "0") {
                     event.number.toString()
                 } else {
-                    rawText + event.number
+                    _uiState.value.rawText + event.number
                 }
-                _uiState.value = _uiState.value.copy(displayText = formatNumber(rawText))
+                _uiState.value = _uiState.value.copy(
+                    rawText = newRawText,
+                    displayText = formatNumber(newRawText)
+                )
             }
             KeypadEvent.Backspace -> {
-                rawText = if (rawText.length > 1) {
-                    rawText.dropLast(1)
+                val newRawText = if (_uiState.value.rawText.length > 1) {
+                    _uiState.value.rawText.dropLast(1)
                 } else {
                     "0"
                 }
-                _uiState.value = _uiState.value.copy(displayText = formatNumber(rawText))
+                _uiState.value = _uiState.value.copy(
+                    rawText = newRawText,
+                    displayText = formatNumber(newRawText)
+                )
             }
             KeypadEvent.Clear -> {
-                rawText = "0"
-                _uiState.value = _uiState.value.copy(displayText = "0")
+                _uiState.value = KeypadState(theme = _uiState.value.theme)
             }
             is KeypadEvent.ThemeChange -> {
                 _uiState.value = _uiState.value.copy(theme = event.theme)
+            }
+            KeypadEvent.Reset -> {
+                _uiState.value = KeypadState()
             }
             else -> {}
         }
