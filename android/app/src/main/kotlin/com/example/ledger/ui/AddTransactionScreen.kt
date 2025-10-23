@@ -29,9 +29,10 @@ import java.util.Locale
 @Composable
 fun AddTransactionScreen(
     initialAmount: String?,
+    initialPerson: String?,
     onTransactionSaved: (person: String, amount: Double, note: String?) -> Unit
 ) {
-    var person by remember { mutableStateOf("") }
+    var person by remember { mutableStateOf(initialPerson ?: "") }
     var amount by remember { mutableStateOf(initialAmount ?: "") }
     var note by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }

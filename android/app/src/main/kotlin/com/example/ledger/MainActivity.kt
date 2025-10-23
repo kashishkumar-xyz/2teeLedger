@@ -74,14 +74,21 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(
-                            "addTransaction?amount={amount}",
-                            arguments = listOf(navArgument("amount") {
-                                type = NavType.StringType
-                                nullable = true
-                            })
+                            "addTransaction?amount={amount}&person={person}",
+                            arguments = listOf(
+                                navArgument("amount") {
+                                    type = NavType.StringType
+                                    nullable = true
+                                },
+                                navArgument("person") {
+                                    type = NavType.StringType
+                                    nullable = true
+                                }
+                            )
                         ) {
                             AddTransactionScreen(
                                 initialAmount = it.arguments?.getString("amount"),
+                                initialPerson = it.arguments?.getString("person"),
                                 onTransactionSaved = { person, amount, note ->
                                     balanceViewModel.saveTransaction(person, amount, note)
                                     navController.popBackStack()
@@ -93,10 +100,12 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("personName") { type = NavType.StringType })
                         ) { backStackEntry ->
                             val personName = backStackEntry.arguments?.getString("personName") ?: ""
-                            // The screen will call the viewmodel to load the data
                             TransactionHistoryScreen(
                                 personName = personName,
-                                viewModel = historyViewModel
+                                viewModel = historyViewModel,
+                                onNavigateToAddTransaction = { person ->
+                                    navController.navigate("addTransaction?person=$person")
+                                }
                             )
                         }
                     }
